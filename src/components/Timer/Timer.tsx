@@ -6,7 +6,7 @@ interface TimerProps {
 }
 
 export const Timer = (props: TimerProps) => {
-  const [toggleTimer, setToggleTimer] = useState(false);
+  const [toggleTimer, setToggleTimer] = useState(true);
 
   useEffect(() => {
     let interval: NodeJS.Timer;
