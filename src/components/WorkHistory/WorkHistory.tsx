@@ -6,24 +6,34 @@ type WorkHistoryDisplay = {
   workedTimeInSeconds: number;
 };
 
-export const WorkHistory = () => {
+interface WorkHistoryProps {
+  timeWorkedSeconds: number;
+}
+
+export const WorkHistory = (props: WorkHistoryProps) => {
   const [workHistories, setWorkHistories] = useState<WorkHistoryDisplay[]>([]);
+  const [totalTimeWorked, setTotalTimeWorked] = useState(0);
 
   useEffect(() => {
     const histories: WorkHistoryDisplay[] = [];
+    let timeWorked = 0;
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i) || "";
-      const item = localStorage.getItem(key);
+      const item = Number.parseInt(localStorage.getItem(key) || "");
+
+      timeWorked += item;
 
       histories.push({
         date: key,
-        workedTimeInSeconds: Number.parseInt(item || ""),
+        workedTimeInSeconds: item,
       });
     }
 
     histories.sort((a, b) => (a.date > b.date ? -1 : 1));
+
+    setTotalTimeWorked(timeWorked);
     setWorkHistories(histories);
-  }, []);
+  }, [props]);
 
   return workHistories.length > 0 ? (
     <div>
@@ -51,6 +61,10 @@ export const WorkHistory = () => {
           })}
         </tbody>
       </table>
+      <p>
+        Total time worked:{" "}
+        {convertSecondsToHoursMinutesSecondsString(totalTimeWorked)}
+      </p>
     </div>
   ) : null;
 };

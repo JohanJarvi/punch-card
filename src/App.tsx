@@ -11,28 +11,18 @@ export default function App() {
   );
 
   const handleTimerTick = (increment: number): void => {
-    setTimeWorkedSeconds(timeWorkedSeconds + increment);
-  };
-
-  const handleTimerState = (running: boolean): void => {
-    if (!running) {
-      const date = new Date().toLocaleDateString();
-      console.log(
-        `Storing time worked today in seconds in this format ${date}: ${timeWorkedSeconds}`
-      );
-      localStorage.setItem(date, timeWorkedSeconds.toString());
-    }
+    const updatedTimeWorked = timeWorkedSeconds + increment;
+    const date = new Date().toLocaleDateString();
+    localStorage.setItem(date, updatedTimeWorked.toString());
+    setTimeWorkedSeconds(updatedTimeWorked);
   };
 
   return (
     <div className="container">
-      <Timer
-        handleTimerTick={handleTimerTick}
-        handleTimerState={handleTimerState}
-      />
+      <Timer handleTimerTick={handleTimerTick} />
       <p>Time worked today:</p>
       <TimeWorkedDisplay timeWorkedSeconds={timeWorkedSeconds} />
-      <WorkHistory />
+      <WorkHistory timeWorkedSeconds={timeWorkedSeconds} />
     </div>
   );
 }

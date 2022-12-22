@@ -3,7 +3,6 @@ import { Button } from "../Button/Button";
 
 interface TimerProps {
   handleTimerTick: (increment: number) => void;
-  handleTimerState: (running: boolean) => void;
 }
 
 export const Timer = (props: TimerProps) => {
@@ -22,7 +21,6 @@ export const Timer = (props: TimerProps) => {
 
   const handleTimerToggle = () => {
     const newTimerState = !toggleTimer;
-    props.handleTimerState(newTimerState);
     setToggleTimer(newTimerState);
   };
 
