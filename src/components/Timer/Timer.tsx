@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { Button } from "../Button/Button";
 
 interface TimerProps {
-  handleChange: (increment: number) => void;
+  handleTimerTick: (increment: number) => void;
+  handleTimerState: (running: boolean) => void;
 }
 
 export const Timer = (props: TimerProps) => {
@@ -10,7 +12,7 @@ export const Timer = (props: TimerProps) => {
   useEffect(() => {
     let interval: NodeJS.Timer;
     if (toggleTimer) {
-      interval = setInterval(() => props.handleChange(1), 1000);
+      interval = setInterval(() => props.handleTimerTick(720), 1000);
     }
 
     return function cleanup() {
@@ -18,16 +20,17 @@ export const Timer = (props: TimerProps) => {
     };
   }, [props, toggleTimer]);
 
-  const handleTimerToggle = (event: any) => {
-    setToggleTimer(!toggleTimer);
+  const handleTimerToggle = () => {
+    const newTimerState = !toggleTimer;
+    props.handleTimerState(newTimerState);
+    setToggleTimer(newTimerState);
   };
 
   return (
     <div>
-      <p>Tick tock</p>
-      <button onClick={handleTimerToggle}>
+      <Button active={toggleTimer} onClick={handleTimerToggle}>
         {toggleTimer ? "Stop" : "Start"}
-      </button>
+      </Button>
     </div>
   );
 };
