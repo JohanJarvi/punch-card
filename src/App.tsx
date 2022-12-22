@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Timer } from "./components/Timer/Timer";
 import "./App.css";
 import { TimeWorkedDisplay } from "./components/TimerDisplay/TimerDisplay";
+import { WorkHistory } from "./components/WorkHistory/WorkHistory";
 
 export default function App() {
   const dateToday = new Date().toLocaleDateString();
@@ -31,6 +32,7 @@ export default function App() {
       />
       <p>Time worked today:</p>
       <TimeWorkedDisplay timeWorkedSeconds={timeWorkedSeconds} />
+      <WorkHistory />
     </div>
   );
 }
