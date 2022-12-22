@@ -12,7 +12,7 @@ export const Timer = (props: TimerProps) => {
   useEffect(() => {
     let interval: NodeJS.Timer;
     if (toggleTimer) {
-      interval = setInterval(() => props.handleTimerTick(720), 1000);
+      interval = setInterval(() => props.handleTimerTick(1111), 1000);
     }
 
     return function cleanup() {

@@ -33,4 +33,37 @@ describe("convertSecondsToHoursMinutesSeconds", () => {
     // Then
     expect(result).toBe("01:01:01");
   });
+
+  it("Should just show the hours when the rest is even", () => {
+    // Given
+    const input = 7200;
+
+    // When
+    const result = convertSecondsToHoursMinutesSecondsString(input);
+
+    // Then
+    expect(result).toBe("02:00:00");
+  });
+
+  it("Should correctly on even seconds", () => {
+    // Given
+    const input = 7320;
+
+    // When
+    const result = convertSecondsToHoursMinutesSecondsString(input);
+
+    // Then
+    expect(result).toBe("02:02:00");
+  });
+
+  it("Should show correctly with tens of minutes and seconds", () => {
+    // Given
+    const input = 7899;
+
+    // When
+    const result = convertSecondsToHoursMinutesSecondsString(input);
+
+    // Then
+    expect(result).toBe("02:11:39");
+  });
 });

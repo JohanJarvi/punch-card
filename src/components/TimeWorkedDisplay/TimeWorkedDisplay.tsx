@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
+import "./TimeWorkedDisplay.css";
 
 interface TimeWorkedDisplayProps {
   timeWorkedSeconds: number;
@@ -9,8 +10,10 @@ export const TimeWorkedDisplay = (props: TimeWorkedDisplayProps) => {
   const [timeWorkedDisplay, setTimeWorkedDisplay] = useState("00:00:00");
 
   useEffect(() => {
-    convertSecondsToHoursMinutesSecondsString(props.timeWorkedSeconds);
+    setTimeWorkedDisplay(
+      convertSecondsToHoursMinutesSecondsString(props.timeWorkedSeconds)
+    );
   }, [props]);
 
-  return <div>{timeWorkedDisplay}</div>;
+  return <div className="">{timeWorkedDisplay}</div>;
 };
