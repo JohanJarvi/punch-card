@@ -39,17 +39,21 @@ export const WorkHistory = (props: WorkHistoryProps) => {
 
     histories.sort((a, b) => (a.date > b.date ? -1 : 1));
 
+    const totalMondays = histories
+      .map((history) => getEnumeratedWeekDayFromLocaleDateString(history.date))
+      .filter((enumeratedweekDay) => enumeratedweekDay === 1).length;
+
     let weeklyWorkHistories: Dictionary<WorkHistoryDisplay[]> = {};
     let sortedWorkHistoryDisplays: WorkHistoryDisplay[] = [];
-    let mondays = 0;
+    let mondays = totalMondays;
     const keys: string[] = [];
     histories.forEach((history) => {
       sortedWorkHistoryDisplays.push(history);
       if (getEnumeratedWeekDayFromLocaleDateString(history.date) === 1) {
-        const key = `Week ${mondays + 1}`;
+        const key = `Week ${mondays}`;
         keys.push(key);
         weeklyWorkHistories[key] = sortedWorkHistoryDisplays;
-        mondays += 1;
+        mondays -= 1;
         sortedWorkHistoryDisplays = [];
       }
     });
