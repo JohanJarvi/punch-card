@@ -12,6 +12,5 @@ export const getEnumeratedWeekDayFromLocaleDateString = (
   const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
 
   const date = new Date(isoDate);
-  console.log(date);
   return date.getDay();
 };
