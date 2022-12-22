@@ -15,5 +15,5 @@ export const TimeWorkedDisplay = (props: TimeWorkedDisplayProps) => {
     );
   }, [props]);
 
-  return <div className="">{timeWorkedDisplay}</div>;
+  return <div className="clock">{timeWorkedDisplay}</div>;
 };

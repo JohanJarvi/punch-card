@@ -26,6 +26,7 @@ export default function App() {
         handleTimerTick={handleTimerTick}
         handleTimerState={handleTimerState}
       />
+      <p>Time worked today:</p>
       <TimeWorkedDisplay timeWorkedSeconds={timeWorkedSeconds} />
     </div>
   );
