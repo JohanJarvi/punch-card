@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getEnumeratedWeekDayFromLocaleDateString } from "../../utils/DateUtils";
 import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
+import { Button } from "../Button/Button";
 import "./WorkHistory.css";
 
 type WorkHistoryDisplay = {
@@ -84,7 +85,9 @@ export const WorkHistory = (props: WorkHistoryProps) => {
 
         return (
           <div key={key}>
-            <p>{key}</p>
+            <p>
+              {key} | <Button>Edit</Button>
+            </p>
             <table>
               <thead>
                 <tr>
