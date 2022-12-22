@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
-import "./TimeWorkedDisplay.css";
+import "./TimerDisplay.css";
 
 interface TimeWorkedDisplayProps {
   timeWorkedSeconds: number;
