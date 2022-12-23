@@ -12,7 +12,7 @@ export interface ButtonProps
       HTMLButtonElement
     >,
     React.AriaAttributes {
-  active: boolean;
+  active?: boolean;
 }
 
 export const Button = (props: ButtonProps) => {
@@ -22,9 +22,15 @@ export const Button = (props: ButtonProps) => {
     setActive(props.active);
   }, [props]);
 
+  const getConditionalButtonClass = (active: boolean | undefined): string => {
+    if (active === undefined) return "";
+
+    return active ? "active" : "inactive";
+  };
+
   return (
     <button
-      className={"button " + (active ? "active" : "inactive")}
+      className={"button " + getConditionalButtonClass(active)}
       onClick={props.onClick}
     >
       {props.children}

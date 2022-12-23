@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { getEnumeratedWeekDayFromLocaleDateString } from "../../utils/DateUtils";
 import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
+import { Button } from "../Button/Button";
+import { Editor } from "./Editor/Editor";
 import "./WorkHistory.css";
 
-type WorkHistoryDisplay = {
+export type WorkHistoryDisplay = {
   date: string;
   workedTimeInSeconds: number;
 };
@@ -16,12 +18,20 @@ interface WorkHistoryProps {
   timeWorkedSeconds: number;
 }
 
+export interface ScreenCoordinates {
+  x: number;
+  y: number;
+}
+
 export const WorkHistory = (props: WorkHistoryProps) => {
   const [workHistories, setWorkHistories] = useState<
     Dictionary<WorkHistoryDisplay[]>
   >({});
-
   const [totalTimeWorked, setTotalTimeWorked] = useState(0);
+  const [showEdit, setShowEdit] = useState(false);
+  const [dateToEdit, setDateToEdit] = useState("");
+  const [clickCoordinates, setClickCoordinates] = useState<ScreenCoordinates>();
+
   useEffect(() => {
     const histories: WorkHistoryDisplay[] = [];
     let timeWorked = 0;
@@ -62,8 +72,30 @@ export const WorkHistory = (props: WorkHistoryProps) => {
     setWorkHistories(weeklyWorkHistories);
   }, [props]);
 
+  const handleEdit = (event: any, dateToEdit: string) => {
+    setShowEdit(true);
+    setDateToEdit(dateToEdit);
+    setClickCoordinates({ x: event.pageX + 100, y: event.pageY });
+  };
+
+  const handleClosed = (closed: boolean) => setShowEdit(!closed);
+
+  const handleEditedWorkHistory = (editedWorkHistory: WorkHistoryDisplay) => {
+    localStorage.setItem(
+      editedWorkHistory.date,
+      editedWorkHistory.workedTimeInSeconds.toString()
+    );
+  };
+
   return (
     <div>
+      <Editor
+        editing={showEdit}
+        dateToBeEdited={dateToEdit}
+        positionCoordinates={clickCoordinates}
+        handleEditedWorkHistory={handleEditedWorkHistory}
+        handleClose={handleClosed}
+      />
       {Object.keys(workHistories).map((key) => {
         const weeklyTimeWorked = workHistories[key]
           .map((history) => history.workedTimeInSeconds)
@@ -78,6 +110,11 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                   value.workedTimeInSeconds
                 )}
               </td>
+              <td>
+                <Button onClick={(event) => handleEdit(event, value.date)}>
+                  Edit
+                </Button>
+              </td>
             </tr>
           );
         });
@@ -90,12 +127,13 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                 <tr>
                   <th>Date</th>
                   <th>Time Worked</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {values}
                 <tr>
-                  <td colSpan={2}>
+                  <td colSpan={3}>
                     <hr />
                     <strong>
                       Total time worked this week:{" "}
