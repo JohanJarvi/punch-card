@@ -1,0 +1,28 @@
+.modal {
+  display: block;
+  position: absolute;
+  background: #f0f0f0;
+  width: 400px;
+  filter: drop-shadow(4px 4px 4px #7f7f7f);
+  border: 1px solid #7f7f7f;
+}
+
+.main-flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flex-item {
+  margin: 20px;
+}
+
+.save-button {
+  margin: 20px;
+  display: flex;
+  justify-content: right;
+}
