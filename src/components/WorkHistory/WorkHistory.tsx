@@ -89,6 +89,9 @@ export const WorkHistory = (props: WorkHistoryProps) => {
     );
   };
 
+  const handleDelete = (event: any, key: string) =>
+    localStorage.removeItem(key);
+
   return (
     <div>
       <Editor
@@ -112,6 +115,7 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                   <th>Date</th>
                   <th>Time Worked</th>
                   <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -131,6 +135,15 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                       >
                         Edit
                       </Button>
+                    </td>
+                    <td>
+                      {workHistory.histories.length > 1 ? (
+                        <Button
+                          onClick={(event) => handleDelete(event, history.date)}
+                        >
+                          Delete
+                        </Button>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
