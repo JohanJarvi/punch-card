@@ -41,3 +41,9 @@ export const getWeekNumberOfYearFromDateKey = (
 
   return Math.ceil(days / 7);
 };
+
+export const getSecondsDiff = (startDate: Date, endDate: Date) => {
+  return Math.round(
+    Math.abs(endDate.getTime() - startDate.getTime()) / 1000
+  );
+}

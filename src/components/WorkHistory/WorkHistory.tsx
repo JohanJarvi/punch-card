@@ -39,6 +39,7 @@ export const WorkHistory = (props: WorkHistoryProps) => {
     let timeWorked = 0;
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i) || "";
+      if (key.includes("-start")) continue;
       const item = Number.parseInt(localStorage.getItem(key) || "");
 
       timeWorked += item;
