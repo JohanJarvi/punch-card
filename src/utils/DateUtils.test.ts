@@ -1,4 +1,7 @@
-import { getEnumeratedWeekDayFromLocaleDateString } from "./DateUtils";
+import {
+  getEnumeratedWeekDayFromLocaleDateString,
+  getWeekNumberOfYearFromDateKey,
+} from "./DateUtils";
 
 describe("getEnumeratedWeekDayFromLocaleDateString", () => {
   it("should throw an error if the regex is not matched", () => {
@@ -79,5 +82,37 @@ describe("getEnumeratedWeekDayFromLocaleDateString", () => {
     const result = getEnumeratedWeekDayFromLocaleDateString(localeDateString);
 
     expect(result).toBe(0);
+  });
+});
+
+describe("getWeekNumberOfYearFromDateKey", () => {
+  it("should return week 1 when the date is in the first week of year", () => {
+    // Given
+    const localDateString = "03/01/2023";
+
+    // When
+    const result = getWeekNumberOfYearFromDateKey(localDateString);
+
+    expect(result).toBe(1);
+  });
+
+  it("should return week 52 when the date is in the last week of year", () => {
+    // Given
+    const localDateString = "31/12/2022";
+
+    // When
+    const result = getWeekNumberOfYearFromDateKey(localDateString);
+
+    expect(result).toBe(52);
+  });
+
+  it("should return week 52 when the date is in the last week of year", () => {
+    // Given
+    const localDateString = "02/01/2023";
+
+    // When
+    const result = getWeekNumberOfYearFromDateKey(localDateString);
+
+    expect(result).toBe(1);
   });
 });

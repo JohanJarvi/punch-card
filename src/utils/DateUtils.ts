@@ -1,16 +1,32 @@
+const getValidDateObjectFromLocalDateString = (dateKey: string): Date => {
+  const re = /..\/..\/..../gm;
+
+  if (!re.exec(dateKey))
+    throw new Error(
+      `Invalid locale date string format: ${dateKey} - must be in the shape DD/MM/YYYY`
+    );
+
+  const parts = dateKey.split("/");
+  const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+  return new Date(isoDate);
+};
+
 export const getEnumeratedWeekDayFromLocaleDateString = (
   localeDateString: string
 ): number => {
-  const re = /..\/..\/..../gm;
+  return getValidDateObjectFromLocalDateString(localeDateString).getDay();
+};
 
-  if (!re.exec(localeDateString))
-    throw new Error(
-      `Invalid locale date string format: ${localeDateString} - must be in the shape DD/MM/YYYY`
-    );
+export const getWeekNumberOfYearFromDateKey = (
+  localeDateString: string
+): number => {
+  const date = getValidDateObjectFromLocalDateString(localeDateString);
 
-  const parts = localeDateString.split("/");
-  const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  const startDate = new Date(date.getFullYear(), 0, 1);
+  var days = Math.floor(
+    (date.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000)
+  );
 
-  const date = new Date(isoDate);
-  return date.getDay();
+  return Math.ceil(days / 7);
 };
