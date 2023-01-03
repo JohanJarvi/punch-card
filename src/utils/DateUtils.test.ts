@@ -106,7 +106,7 @@ describe("getWeekNumberOfYearFromDateKey", () => {
     expect(result).toBe(52);
   });
 
-  it("should return week 52 when the date is in the last week of year", () => {
+  it("should return week 1 when the date is in the last week of year", () => {
     // Given
     const localDateString = "02/01/2023";
 

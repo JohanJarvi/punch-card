@@ -50,6 +50,8 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       });
     }
 
+    if (histories.length === 0) return;
+
     histories.sort((a, b) => (a.date > b.date ? -1 : 1));
 
     const uniqueWeeks = Array.from(
