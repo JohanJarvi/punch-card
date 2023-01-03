@@ -6,6 +6,7 @@ import "./Editor.css";
 interface EditorProps {
   editing: boolean;
   dateToBeEdited: string;
+  weekNumber: number;
   positionCoordinates?: ScreenCoordinates;
   handleEditedWorkHistory: (editedWorkHistory: WorkHistoryDisplay) => void;
   handleClose: (closed: boolean) => void;
@@ -38,6 +39,7 @@ export const Editor = (props: EditorProps) => {
     props.handleEditedWorkHistory({
       date: props.dateToBeEdited,
       workedTimeInSeconds: totalSeconds,
+      weekNumber: props.weekNumber
     });
 
     (document.getElementById("hours") as any).value = "";
