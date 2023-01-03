@@ -56,19 +56,23 @@ export default function App() {
     setTimeLeftSeconds(
       workDayInSeconds - timeWorkedSeconds + minutesOfBreak * 60
     );
-  }, [timeWorkedSeconds]);
+  }, [minutesOfBreak, timeWorkedSeconds]);
 
   const handleBreakInput = (event: React.ChangeEvent<HTMLInputElement>) =>
     setMinutesOfBreak(Number.parseInt(event.target.value || "0"));
 
   return (
     <div className="container">
-      <p>Time since start of work today:</p>
-      <TimerDisplay seconds={timeWorkedSeconds} />
+      <h1>{new Date().toLocaleDateString()}</h1>
+      <TimerDisplay seconds={timeWorkedSeconds} message="Time Worked" />
+      {timeLeftSeconds > 0 ? (
+        <TimerDisplay seconds={timeLeftSeconds} message="Time Left" />
+      ) : (
+        <h2>You have worked too much today! Stop working!</h2>
+      )}
       <p>Enter minutes of break today (if any):</p>
       <input onChange={handleBreakInput}></input>
-      <p>Time left today:</p>
-      <TimerDisplay seconds={timeLeftSeconds} />
+      <h2>Work History</h2>
       <WorkHistory timeWorkedSeconds={timeWorkedSeconds} />
     </div>
   );

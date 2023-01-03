@@ -39,7 +39,7 @@ export const Editor = (props: EditorProps) => {
     props.handleEditedWorkHistory({
       date: props.dateToBeEdited,
       workedTimeInSeconds: totalSeconds,
-      weekNumber: props.weekNumber
+      weekNumber: props.weekNumber,
     });
 
     (document.getElementById("hours") as any).value = "";
@@ -93,9 +93,7 @@ export const Editor = (props: EditorProps) => {
       </div>
       {saveDisabled ? null : (
         <div className="save-button">
-          <Button active={false} onClick={handleSave}>
-            Save
-          </Button>
+          <Button active={false} onClick={handleSave} label="Save" />
         </div>
       )}
     </div>

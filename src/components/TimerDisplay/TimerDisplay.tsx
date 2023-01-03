@@ -4,6 +4,7 @@ import "./TimerDisplay.css";
 
 interface TimerDisplayProps {
   seconds: number;
+  message?: string;
 }
 
 export const TimerDisplay = (props: TimerDisplayProps) => {
@@ -15,5 +16,16 @@ export const TimerDisplay = (props: TimerDisplayProps) => {
     );
   }, [props]);
 
-  return <div className="clock">{timeWorkedDisplay}</div>;
+  return (
+    <div>
+      {props.seconds > 0 ? (
+        <div>
+          <p>
+            <strong>{props.message}</strong>
+          </p>
+          <div className="clock">{timeWorkedDisplay}</div>
+        </div>
+      ) : null}
+    </div>
+  );
 };

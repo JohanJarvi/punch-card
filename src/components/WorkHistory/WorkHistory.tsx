@@ -28,7 +28,6 @@ export interface ScreenCoordinates {
 
 export const WorkHistory = (props: WorkHistoryProps) => {
   const [workHistories, setWorkHistories] = useState<WorkHistoryWeek[]>([]);
-  const [totalTimeWorked, setTotalTimeWorked] = useState(0);
   const [showEdit, setShowEdit] = useState(false);
   const [dateToEdit, setDateToEdit] = useState("");
   const [weekNumberOFEdit, setWeekNumberOfEdit] = useState(0);
@@ -36,13 +35,10 @@ export const WorkHistory = (props: WorkHistoryProps) => {
 
   useEffect(() => {
     const histories: WorkHistoryDisplay[] = [];
-    let timeWorked = 0;
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i) || "";
       if (key.includes("-start")) continue;
       const item = Number.parseInt(localStorage.getItem(key) || "");
-
-      timeWorked += item;
 
       histories.push({
         date: key,
@@ -70,7 +66,6 @@ export const WorkHistory = (props: WorkHistoryProps) => {
 
     workHistoryWeeks.sort((a, b) => (a.week > b.week ? -1 : 1));
 
-    setTotalTimeWorked(timeWorked);
     setWorkHistories(workHistoryWeeks);
   }, [props]);
 
@@ -133,26 +128,23 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                         onClick={(event) =>
                           handleEdit(event, history.date, history.weekNumber)
                         }
-                      >
-                        Edit
-                      </Button>
+                        label="Edit"
+                      />
                     </td>
                     <td>
                       {workHistory.histories.length > 1 ? (
                         <Button
                           onClick={(event) => handleDelete(event, history.date)}
-                        >
-                          Delete
-                        </Button>
+                          label="Delete"
+                        />
                       ) : null}
                     </td>
                   </tr>
                 ))}
                 <tr>
-                  <td colSpan={3}>
-                    <hr />
+                  <td style={{ borderTop: "1px solid black" }}>Week total</td>
+                  <td style={{ borderTop: "1px solid black" }} colSpan={3}>
                     <strong>
-                      Total time worked this week:{" "}
                       {convertSecondsToHoursMinutesSecondsString(
                         workHistory.totalTimeWorkedInSeconds
                       )}
@@ -164,8 +156,6 @@ export const WorkHistory = (props: WorkHistoryProps) => {
           </div>
         );
       })}
-      <h3>Total time worked:</h3>
-      <h2>{convertSecondsToHoursMinutesSecondsString(totalTimeWorked)}</h2>
     </div>
   );
 };

@@ -13,6 +13,7 @@ export interface ButtonProps
     >,
     React.AriaAttributes {
   active?: boolean;
+  label?: string;
 }
 
 export const Button = (props: ButtonProps) => {
@@ -33,7 +34,7 @@ export const Button = (props: ButtonProps) => {
       className={"button " + getConditionalButtonClass(active)}
       onClick={props.onClick}
     >
-      {props.children}
+      {props.label}
     </button>
   );
 };
