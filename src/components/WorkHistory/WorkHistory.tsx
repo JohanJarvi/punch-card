@@ -50,29 +50,29 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       });
     }
 
-    if (histories.length === 0) return;
+    if (histories.length > 0) {
+      histories.sort((a, b) => (a.date > b.date ? -1 : 1));
 
-    histories.sort((a, b) => (a.date > b.date ? -1 : 1));
-
-    const uniqueWeeks = Array.from(
-      new Set(histories.map((history) => history.weekNumber))
-    );
-
-    const workHistoryWeeks: WorkHistoryWeek[] = uniqueWeeks.map((week) => {
-      const filteredHistories = histories.filter(
-        (history) => history.weekNumber === week
+      const uniqueWeeks = Array.from(
+        new Set(histories.map((history) => history.weekNumber))
       );
-      const totalTimeWorkedInSeconds = filteredHistories
-        .map((history) => history.workedTimeInSeconds)
-        .reduce((a, b) => a + b);
 
-      return { week, histories: filteredHistories, totalTimeWorkedInSeconds };
-    });
+      const workHistoryWeeks: WorkHistoryWeek[] = uniqueWeeks.map((week) => {
+        const filteredHistories = histories.filter(
+          (history) => history.weekNumber === week
+        );
+        const totalTimeWorkedInSeconds = filteredHistories
+          .map((history) => history.workedTimeInSeconds)
+          .reduce((a, b) => a + b);
 
-    workHistoryWeeks.sort((a, b) => (a.week > b.week ? -1 : 1));
+        return { week, histories: filteredHistories, totalTimeWorkedInSeconds };
+      });
 
-    setTotalTimeWorked(timeWorked);
-    setWorkHistories(workHistoryWeeks);
+      workHistoryWeeks.sort((a, b) => (a.week > b.week ? -1 : 1));
+
+      setTotalTimeWorked(timeWorked);
+      setWorkHistories(workHistoryWeeks);
+    }
   }, [props]);
 
   const handleEdit = (event: any, dateToEdit: string, weekNumber: number) => {
