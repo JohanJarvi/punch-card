@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Timer } from "./components/Timer/Timer";
 import "./App.css";
-import { TimeWorkedDisplay } from "./components/TimerDisplay/TimerDisplay";
+import { TimerDisplay } from "./components/TimerDisplay/TimerDisplay";
 import { WorkHistory } from "./components/WorkHistory/WorkHistory";
 
 export default function App() {
@@ -10,18 +10,24 @@ export default function App() {
     Number.parseInt(localStorage?.getItem(dateToday) || "0")
   );
 
+  const [timeLeftSeconds, setTimeLeftSeconds] = useState(0);
+
   const handleTimerTick = (increment: number): void => {
     const updatedTimeWorked = timeWorkedSeconds + increment;
     const date = new Date().toLocaleDateString();
     localStorage.setItem(date, updatedTimeWorked.toString());
     setTimeWorkedSeconds(updatedTimeWorked);
+    const workDayInSeconds = 7.6*60*60;
+    setTimeLeftSeconds(workDayInSeconds - updatedTimeWorked);
   };
 
   return (
     <div className="container">
       <Timer handleTimerTick={handleTimerTick} />
       <p>Time worked today:</p>
-      <TimeWorkedDisplay timeWorkedSeconds={timeWorkedSeconds} />
+      <TimerDisplay seconds={timeWorkedSeconds} />
+      <p>Time left today:</p>
+      <TimerDisplay seconds={timeLeftSeconds} />
       <WorkHistory timeWorkedSeconds={timeWorkedSeconds} />
     </div>
   );
