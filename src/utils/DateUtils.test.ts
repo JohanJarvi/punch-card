@@ -1,5 +1,6 @@
 import {
   getEnumeratedWeekDayFromLocaleDateString,
+  getValidDateObjectFromLocalDateString,
   getWeekNumberOfYearFromDateKey,
 } from "./DateUtils";
 
@@ -114,5 +115,57 @@ describe("getWeekNumberOfYearFromDateKey", () => {
     const result = getWeekNumberOfYearFromDateKey(localDateString);
 
     expect(result).toBe(1);
+  });
+});
+
+describe("getValidDateObjectFromLocalDateString", () => {
+  it("should parse '03/01/2023' into a valid date object", () => {
+    // Given
+    const localeDateString = "03/01/2023";
+
+    // When
+    const result = getValidDateObjectFromLocalDateString(localeDateString);
+
+    expect(result).toEqual(new Date("2023-01-03"));
+  });
+
+  it("should parse '3/1/2023' into a valid date object", () => {
+    // Given
+    const localeDateString = "3/1/2023";
+
+    // When
+    const result = getValidDateObjectFromLocalDateString(localeDateString);
+
+    expect(result).toEqual(new Date("2023-01-03"));
+  });
+
+  it("should parse '03/1/2023' into a valid date object", () => {
+    // Given
+    const localeDateString = "03/1/2023";
+
+    // When
+    const result = getValidDateObjectFromLocalDateString(localeDateString);
+
+    expect(result).toEqual(new Date("2023-01-03"));
+  });
+
+  it("should parse '3/01/2023' into a valid date object", () => {
+    // Given
+    const localeDateString = "3/01/2023";
+
+    // When
+    const result = getValidDateObjectFromLocalDateString(localeDateString);
+
+    expect(result).toEqual(new Date("2023-01-03"));
+  });
+
+  it("should parse '11/11/2011' into a valid date object", () => {
+    // Given
+    const localeDateString = "11/11/2011";
+
+    // When
+    const result = getValidDateObjectFromLocalDateString(localeDateString);
+
+    expect(result).toEqual(new Date("2011-11-11"));
   });
 });

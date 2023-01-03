@@ -1,4 +1,6 @@
-const getValidDateObjectFromLocalDateString = (dateKey: string): Date => {
+export const getValidDateObjectFromLocalDateString = (
+  dateKey: string
+): Date => {
   const re = /\d+\/\d+\/\d{4}/gm;
 
   if (!re.exec(dateKey))
@@ -6,7 +8,16 @@ const getValidDateObjectFromLocalDateString = (dateKey: string): Date => {
       `Invalid locale date string format: ${dateKey} - must be in the shape DD/MM/YYYY`
     );
 
-  const parts = dateKey.split("/");
+  const parts = dateKey.split("/").map((part) => {
+    const smallerParts = part.split("");
+
+    if (smallerParts.length === 1) {
+      return `0${part}`;
+    } else {
+      return part;
+    }
+  });
+
   const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
 
   return new Date(isoDate);
