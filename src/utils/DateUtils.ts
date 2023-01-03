@@ -1,5 +1,5 @@
 const getValidDateObjectFromLocalDateString = (dateKey: string): Date => {
-  const re = /..\/..\/..../gm;
+  const re = /\d+\/\d+\/\d{4}/gm;
 
   if (!re.exec(dateKey))
     throw new Error(
