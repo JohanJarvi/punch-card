@@ -7,16 +7,14 @@ import { getSecondsDiff } from "./utils/DateUtils";
 
 export default function App() {
   const dateToday = new Date().toLocaleDateString();
-  const [timeWorkedSeconds, setTimeWorkedSeconds] = useState(
-    Number.parseInt(localStorage?.getItem(dateToday) || "0")
-  );
+  const [timeWorkedSeconds, setTimeWorkedSeconds] = useState(0);
   const [totalTimeWorkedSeconds, setTotalTimeWorkedSeconds] = useState(
     Number.parseInt(localStorage.getItem(`${dateToday}-total`) || "0")
   );
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(0);
   const [timerStartDateTime, setTimerStartDateTime] = useState<Date>();
   const [timerStopDateTime, setTimerStopDateTime] = useState<Date>();
-  const [timerOn, toggleTimer] = useState(true);
+  const [timerOn, toggleTimer] = useState(false);
 
   const setStartTime = () => {
     const localeDateString = new Date().toLocaleDateString();
@@ -28,6 +26,7 @@ export default function App() {
   const setStopTime = () => {
     const localeDateString = new Date().toLocaleDateString();
     const newStartTime = new Date();
+    localStorage.setItem(localeDateString, "0");
     localStorage.setItem(`${localeDateString}-stop`, new Date().toString());
     setTimerStopDateTime(newStartTime);
   };
@@ -55,6 +54,10 @@ export default function App() {
       incrementWorkTotal(bankedUpSeconds, date);
       localStorage.setItem(`${date}-safeguard`, "0");
     }
+
+    return function cleanup() {
+      localStorage.removeItem(date);
+    };
   }, []);
 
   useEffect(() => {
@@ -94,7 +97,11 @@ export default function App() {
     localStorage.setItem(date, timeWorkedSeconds.toString());
 
     const workDayInSeconds = 7.6 * 60 * 60;
-    setTimeLeftSeconds(workDayInSeconds - timeWorkedSeconds);
+    const totalSoFar = Number.parseInt(
+      localStorage.getItem(`${date}-total`) || "0"
+    );
+
+    setTimeLeftSeconds(workDayInSeconds - timeWorkedSeconds - totalSoFar);
   }, [timeWorkedSeconds]);
 
   const handleTimerToggle = () => toggleTimer(!timerOn);
@@ -111,6 +118,7 @@ export default function App() {
         seconds={timeWorkedSeconds}
         message="Time since clock-in:"
       />
+      <TimerDisplay seconds={timeLeftSeconds} message="Time left:" />
       <h2>Work Totals</h2>
       <WorkHistory timeWorkedSeconds={totalTimeWorkedSeconds} />
     </div>
