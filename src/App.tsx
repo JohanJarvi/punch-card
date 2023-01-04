@@ -106,6 +106,9 @@ export default function App() {
 
   const handleTimerToggle = () => toggleTimer(!timerOn);
 
+  const handleSave = () => toggleTimer(true);
+  const handleEdit = () => toggleTimer(false);
+
   return (
     <div className="container">
       <h1>{new Date().toLocaleDateString()}</h1>
@@ -120,7 +123,7 @@ export default function App() {
       />
       <TimerDisplay seconds={timeLeftSeconds} message="Time left:" />
       <h2>Work Totals</h2>
-      <WorkHistory timeWorkedSeconds={totalTimeWorkedSeconds} />
+      <WorkHistory timeWorkedSeconds={totalTimeWorkedSeconds} onSave={handleSave} onEdit={handleEdit}/>
     </div>
   );
 }

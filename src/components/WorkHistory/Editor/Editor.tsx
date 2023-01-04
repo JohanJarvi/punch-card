@@ -10,6 +10,7 @@ interface EditorProps {
   positionCoordinates?: ScreenCoordinates;
   handleEditedWorkHistory: (editedWorkHistory: WorkHistoryDisplay) => void;
   handleClose: (closed: boolean) => void;
+  handleSave: () => void;
 }
 
 export const Editor = (props: EditorProps) => {
@@ -50,6 +51,7 @@ export const Editor = (props: EditorProps) => {
     setMinutes(0);
     setSeconds(0);
 
+    props.handleSave();
     props.handleClose(true);
   };
 

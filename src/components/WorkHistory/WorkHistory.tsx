@@ -13,6 +13,8 @@ export type WorkHistoryDisplay = {
 
 interface WorkHistoryProps {
   timeWorkedSeconds: number;
+  onSave: () => void;
+  onEdit: () => void;
 }
 
 interface WorkHistoryWeek {
@@ -77,9 +79,15 @@ export const WorkHistory = (props: WorkHistoryProps) => {
     setDateToEdit(dateToEdit);
     setWeekNumberOfEdit(weekNumber);
     setClickCoordinates({ x: event.pageX + 100, y: event.pageY });
+    if (dateToEdit.includes(new Date().toLocaleDateString())) {
+      props.onEdit();
+    }
   };
 
-  const handleClosed = (closed: boolean) => setShowEdit(!closed);
+  const handleClosed = (closed: boolean) => {
+    setShowEdit(!closed);
+    props.onSave();
+  };
 
   const handleEditedWorkHistory = (editedWorkHistory: WorkHistoryDisplay) => {
     localStorage.setItem(
@@ -95,11 +103,12 @@ export const WorkHistory = (props: WorkHistoryProps) => {
     <div>
       <Editor
         editing={showEdit}
-        dateToBeEdited={dateToEdit}
+        dateToBeEdited={`${dateToEdit}-total`}
         weekNumber={weekNumberOFEdit}
         positionCoordinates={clickCoordinates}
         handleEditedWorkHistory={handleEditedWorkHistory}
         handleClose={handleClosed}
+        handleSave={props.onSave}
       />
       {workHistories.map((workHistory) => {
         return (
