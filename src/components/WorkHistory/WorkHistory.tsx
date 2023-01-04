@@ -37,14 +37,17 @@ export const WorkHistory = (props: WorkHistoryProps) => {
     const histories: WorkHistoryDisplay[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i) || "";
-      if (key.includes("-start")) continue;
-      const item = Number.parseInt(localStorage.getItem(key) || "");
+      if (key.includes("-total")) {
+        const item = Number.parseInt(localStorage.getItem(key) || "");
 
-      histories.push({
-        date: key,
-        workedTimeInSeconds: item,
-        weekNumber: getWeekNumberOfYearFromDateKey(key),
-      });
+        const sanitisedKey = key.replace("-total", "");
+
+        histories.push({
+          date: sanitisedKey,
+          workedTimeInSeconds: item,
+          weekNumber: getWeekNumberOfYearFromDateKey(sanitisedKey),
+        });
+      }
     }
 
     histories.sort((a, b) => (a.date > b.date ? -1 : 1));
