@@ -115,15 +115,15 @@ export default function App() {
       <Button
         active={timerOn}
         onClick={handleTimerToggle}
-        label={timerOn ? "Stop" : "Start"}
-      />
-      <TimerDisplay
-        seconds={timeWorkedSeconds}
-        message="Time since clock-in:"
+        label={timerOn ? "Stop working" : "Begin working"}
       />
       <TimerDisplay seconds={timeLeftSeconds} message="Time left:" />
       <h2>Work Totals</h2>
-      <WorkHistory timeWorkedSeconds={totalTimeWorkedSeconds} onSave={handleSave} onEdit={handleEdit}/>
+      <WorkHistory
+        timeWorkedSeconds={totalTimeWorkedSeconds}
+        onSave={handleSave}
+        onEdit={handleEdit}
+      />
     </div>
   );
 }

@@ -18,14 +18,14 @@ export const TimerDisplay = (props: TimerDisplayProps) => {
 
   return (
     <div>
-      {props.seconds > 0 ? (
-        <div>
-          <p>
-            <strong>{props.message}</strong>
-          </p>
-          <div className="clock">{timeWorkedDisplay}</div>
-        </div>
-      ) : null}
+      {props.seconds < 0 ? (
+        <p>You are now working overtime. Stop that!</p>
+      ) : (
+        <p>
+          <strong>{props.message}</strong>{" "}
+          <span className="clock">{timeWorkedDisplay}</span>
+        </p>
+      )}
     </div>
   );
 };
