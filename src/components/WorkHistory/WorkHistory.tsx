@@ -96,8 +96,21 @@ export const WorkHistory = (props: WorkHistoryProps) => {
     );
   };
 
-  const handleDelete = (event: any, key: string) =>
-    localStorage.removeItem(key);
+  const handleDelete = (event: any, key: string) => {
+    localStorage.removeItem(`${key}-total`);
+
+    const newHistories = workHistories
+      .map((workHistoryWeek) => ({
+        week: workHistoryWeek.week,
+        histories: workHistoryWeek.histories.filter(
+          (history) => !history.date.includes(key)
+        ),
+        totalTimeWorkedInSeconds: workHistoryWeek.totalTimeWorkedInSeconds,
+      }))
+      .filter((workHistoryWeek) => workHistoryWeek.histories.length > 0);
+
+    setWorkHistories(newHistories);
+  };
 
   return (
     <div>
@@ -144,12 +157,10 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                       />
                     </td>
                     <td>
-                      {workHistory.histories.length > 1 ? (
-                        <Button
-                          onClick={(event) => handleDelete(event, history.date)}
-                          label="Delete"
-                        />
-                      ) : null}
+                      <Button
+                        onClick={(event) => handleDelete(event, history.date)}
+                        label="Delete"
+                      />
                     </td>
                   </tr>
                 ))}
