@@ -43,7 +43,12 @@ export const getWeekNumberOfYearFromDateKey = (
 };
 
 export const getSecondsDiff = (startDate: Date, endDate: Date) => {
-  return Math.round(
-    Math.abs(endDate.getTime() - startDate.getTime()) / 1000
-  );
-}
+  return Math.round(Math.abs(endDate.getTime() - startDate.getTime()) / 1000);
+};
+
+export const getYearFromLocaleDateString = (
+  localeDateString: string
+): number => {
+  const date = getValidDateObjectFromLocalDateString(localeDateString);
+  return date.getFullYear();
+};

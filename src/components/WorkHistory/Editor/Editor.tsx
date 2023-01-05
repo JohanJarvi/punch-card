@@ -5,8 +5,7 @@ import "./Editor.css";
 
 interface EditorProps {
   editing: boolean;
-  dateToBeEdited: string;
-  weekNumber: number;
+  workHistoryToEdit: WorkHistoryDisplay;
   positionCoordinates?: ScreenCoordinates;
   handleEditedWorkHistory: (editedWorkHistory: WorkHistoryDisplay) => void;
   handleClose: (closed: boolean) => void;
@@ -37,11 +36,13 @@ export const Editor = (props: EditorProps) => {
   const handleSave = () => {
     const totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
-    props.handleEditedWorkHistory({
-      date: props.dateToBeEdited,
+    const updatedWorkHistoryDisplay = {
+      ...props.workHistoryToEdit,
+      date: `${props.workHistoryToEdit.date}-total`,
       workedTimeInSeconds: totalSeconds,
-      weekNumber: props.weekNumber,
-    });
+    };
+
+    props.handleEditedWorkHistory(updatedWorkHistoryDisplay);
 
     (document.getElementById("hours") as any).value = "";
     (document.getElementById("minutes") as any).value = "";
@@ -65,7 +66,7 @@ export const Editor = (props: EditorProps) => {
     >
       <div className="main-flex-container">
         <div className="flex-item">
-          Editing work hours for {props.dateToBeEdited}{" "}
+          Editing work hours for {props.workHistoryToEdit.date}{" "}
         </div>
         <div
           className="flex-item"

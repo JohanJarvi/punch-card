@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { getWeekNumberOfYearFromDateKey } from "../../utils/DateUtils";
+import {
+  getWeekNumberOfYearFromDateKey,
+  getYearFromLocaleDateString,
+} from "../../utils/DateUtils";
 import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
 import { Button } from "../Button/Button";
 import { Editor } from "./Editor/Editor";
@@ -9,6 +12,7 @@ export type WorkHistoryDisplay = {
   date: string;
   workedTimeInSeconds: number;
   weekNumber: number;
+  year: number;
 };
 
 interface WorkHistoryProps {
@@ -21,6 +25,7 @@ interface WorkHistoryWeek {
   week: number;
   histories: WorkHistoryDisplay[];
   totalTimeWorkedInSeconds: number;
+  year: number;
 }
 
 export interface ScreenCoordinates {
@@ -31,8 +36,8 @@ export interface ScreenCoordinates {
 export const WorkHistory = (props: WorkHistoryProps) => {
   const [workHistories, setWorkHistories] = useState<WorkHistoryWeek[]>([]);
   const [showEdit, setShowEdit] = useState(false);
-  const [dateToEdit, setDateToEdit] = useState("");
-  const [weekNumberOFEdit, setWeekNumberOfEdit] = useState(0);
+  const [workHistoryToEdit, setWorkHistoryToEdit] =
+    useState<WorkHistoryDisplay>();
   const [clickCoordinates, setClickCoordinates] = useState<ScreenCoordinates>();
 
   useEffect(() => {
@@ -48,6 +53,7 @@ export const WorkHistory = (props: WorkHistoryProps) => {
           date: sanitisedKey,
           workedTimeInSeconds: item,
           weekNumber: getWeekNumberOfYearFromDateKey(sanitisedKey),
+          year: getYearFromLocaleDateString(sanitisedKey),
         });
       }
     }
@@ -66,20 +72,23 @@ export const WorkHistory = (props: WorkHistoryProps) => {
         .map((history) => history.workedTimeInSeconds)
         .reduce((a, b) => a + b);
 
-      return { week, histories: filteredHistories, totalTimeWorkedInSeconds };
+      return {
+        week,
+        histories: filteredHistories,
+        totalTimeWorkedInSeconds,
+        year: filteredHistories[0].year,
+      };
     });
 
-    workHistoryWeeks.sort((a, b) => (a.week > b.week ? -1 : 1));
-
+    workHistoryWeeks.sort((a, b) => (b.year || 0) - (a.year || 0));
     setWorkHistories(workHistoryWeeks);
   }, [props]);
 
-  const handleEdit = (event: any, dateToEdit: string, weekNumber: number) => {
+  const handleEdit = (event: any, workHistoryToEdit: WorkHistoryDisplay) => {
     setShowEdit(true);
-    setDateToEdit(dateToEdit);
-    setWeekNumberOfEdit(weekNumber);
+    setWorkHistoryToEdit(workHistoryToEdit);
     setClickCoordinates({ x: event.pageX + 100, y: event.pageY });
-    if (dateToEdit.includes(new Date().toLocaleDateString())) {
+    if (workHistoryToEdit.date.includes(new Date().toLocaleDateString())) {
       props.onEdit();
     }
   };
@@ -106,6 +115,7 @@ export const WorkHistory = (props: WorkHistoryProps) => {
           (history) => !history.date.includes(key)
         ),
         totalTimeWorkedInSeconds: workHistoryWeek.totalTimeWorkedInSeconds,
+        year: workHistoryWeek.year,
       }))
       .filter((workHistoryWeek) => workHistoryWeek.histories.length > 0);
 
@@ -114,15 +124,18 @@ export const WorkHistory = (props: WorkHistoryProps) => {
 
   return (
     <div>
-      <Editor
-        editing={showEdit}
-        dateToBeEdited={`${dateToEdit}-total`}
-        weekNumber={weekNumberOFEdit}
-        positionCoordinates={clickCoordinates}
-        handleEditedWorkHistory={handleEditedWorkHistory}
-        handleClose={handleClosed}
-        handleSave={props.onSave}
-      />
+      <div>
+        {workHistoryToEdit ? (
+          <Editor
+            editing={showEdit}
+            workHistoryToEdit={workHistoryToEdit}
+            positionCoordinates={clickCoordinates}
+            handleEditedWorkHistory={handleEditedWorkHistory}
+            handleClose={handleClosed}
+            handleSave={props.onSave}
+          />
+        ) : null}
+      </div>
       {workHistories.map((workHistory) => {
         return (
           <div key={workHistory.week}>
@@ -150,9 +163,7 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                     </td>
                     <td>
                       <Button
-                        onClick={(event) =>
-                          handleEdit(event, history.date, history.weekNumber)
-                        }
+                        onClick={(event) => handleEdit(event, history)}
                         label="Edit"
                       />
                     </td>

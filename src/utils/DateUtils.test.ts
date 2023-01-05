@@ -2,12 +2,15 @@ import {
   getEnumeratedWeekDayFromLocaleDateString,
   getValidDateObjectFromLocalDateString,
   getWeekNumberOfYearFromDateKey,
+  getYearFromLocaleDateString,
 } from "./DateUtils";
 
 describe("getEnumeratedWeekDayFromLocaleDateString", () => {
   it("should throw an error if the regex is not matched", () => {
+    // Given
     const incorrectDateString = "19-12-2022";
 
+    // Then
     expect(() =>
       getEnumeratedWeekDayFromLocaleDateString(incorrectDateString)
     ).toThrowError(
@@ -22,6 +25,7 @@ describe("getEnumeratedWeekDayFromLocaleDateString", () => {
     // When
     const result = getEnumeratedWeekDayFromLocaleDateString(localeDateString);
 
+    // Then
     expect(result).toBe(1);
   });
 
@@ -32,6 +36,7 @@ describe("getEnumeratedWeekDayFromLocaleDateString", () => {
     // When
     const result = getEnumeratedWeekDayFromLocaleDateString(localeDateString);
 
+    // Then
     expect(result).toBe(2);
   });
 
@@ -42,6 +47,7 @@ describe("getEnumeratedWeekDayFromLocaleDateString", () => {
     // When
     const result = getEnumeratedWeekDayFromLocaleDateString(localeDateString);
 
+    // Then
     expect(result).toBe(3);
   });
 
@@ -52,6 +58,7 @@ describe("getEnumeratedWeekDayFromLocaleDateString", () => {
     // When
     const result = getEnumeratedWeekDayFromLocaleDateString(localeDateString);
 
+    // Then
     expect(result).toBe(4);
   });
 
@@ -62,6 +69,7 @@ describe("getEnumeratedWeekDayFromLocaleDateString", () => {
     // When
     const result = getEnumeratedWeekDayFromLocaleDateString(localeDateString);
 
+    // Then
     expect(result).toBe(5);
   });
 
@@ -72,6 +80,7 @@ describe("getEnumeratedWeekDayFromLocaleDateString", () => {
     // When
     const result = getEnumeratedWeekDayFromLocaleDateString(localeDateString);
 
+    // Then
     expect(result).toBe(6);
   });
 
@@ -82,6 +91,7 @@ describe("getEnumeratedWeekDayFromLocaleDateString", () => {
     // When
     const result = getEnumeratedWeekDayFromLocaleDateString(localeDateString);
 
+    // Then
     expect(result).toBe(0);
   });
 });
@@ -94,6 +104,7 @@ describe("getWeekNumberOfYearFromDateKey", () => {
     // When
     const result = getWeekNumberOfYearFromDateKey(localDateString);
 
+    // Then
     expect(result).toBe(1);
   });
 
@@ -104,6 +115,7 @@ describe("getWeekNumberOfYearFromDateKey", () => {
     // When
     const result = getWeekNumberOfYearFromDateKey(localDateString);
 
+    // Then
     expect(result).toBe(52);
   });
 
@@ -114,6 +126,7 @@ describe("getWeekNumberOfYearFromDateKey", () => {
     // When
     const result = getWeekNumberOfYearFromDateKey(localDateString);
 
+    // Then
     expect(result).toBe(1);
   });
 });
@@ -126,6 +139,7 @@ describe("getValidDateObjectFromLocalDateString", () => {
     // When
     const result = getValidDateObjectFromLocalDateString(localeDateString);
 
+    // Then
     expect(result).toEqual(new Date("2023-01-03"));
   });
 
@@ -136,6 +150,7 @@ describe("getValidDateObjectFromLocalDateString", () => {
     // When
     const result = getValidDateObjectFromLocalDateString(localeDateString);
 
+    // Then
     expect(result).toEqual(new Date("2023-01-03"));
   });
 
@@ -146,6 +161,7 @@ describe("getValidDateObjectFromLocalDateString", () => {
     // When
     const result = getValidDateObjectFromLocalDateString(localeDateString);
 
+    // Then
     expect(result).toEqual(new Date("2023-01-03"));
   });
 
@@ -156,6 +172,7 @@ describe("getValidDateObjectFromLocalDateString", () => {
     // When
     const result = getValidDateObjectFromLocalDateString(localeDateString);
 
+    // Then
     expect(result).toEqual(new Date("2023-01-03"));
   });
 
@@ -166,6 +183,20 @@ describe("getValidDateObjectFromLocalDateString", () => {
     // When
     const result = getValidDateObjectFromLocalDateString(localeDateString);
 
+    // Then
     expect(result).toEqual(new Date("2011-11-11"));
+  });
+});
+
+describe("getYearFromLocaleDateString", () => {
+  it("should be able to take various locale date strings and give the year correct year", () => {
+    // Given
+    const years = ["12/2/2022", "13/04/2021", "1/1/1996", "02/12/2123"];
+
+    // When
+    const results = years.map((year) => getYearFromLocaleDateString(year));
+
+    // Then
+    expect(results).toEqual([2022, 2021, 1996, 2123]);
   });
 });
