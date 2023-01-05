@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  getTimeLeftInSecondsOfWorkWeek,
   getWeekNumberOfYearFromDateKey,
   getYearFromLocaleDateString,
 } from "../../utils/DateUtils";
@@ -185,6 +186,22 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                     </strong>
                   </td>
                 </tr>
+                {getTimeLeftInSecondsOfWorkWeek(
+                  workHistory.totalTimeWorkedInSeconds
+                ) > 0 ? (
+                  <tr>
+                    <td>Time left</td>
+                    <td colSpan={3}>
+                      <strong>
+                        {convertSecondsToHoursMinutesSecondsString(
+                          getTimeLeftInSecondsOfWorkWeek(
+                            workHistory.totalTimeWorkedInSeconds
+                          )
+                        )}
+                      </strong>
+                    </td>
+                  </tr>
+                ) : null}
               </tbody>
             </table>
           </div>

@@ -52,3 +52,14 @@ export const getYearFromLocaleDateString = (
   const date = getValidDateObjectFromLocalDateString(localeDateString);
   return date.getFullYear();
 };
+
+export const getTimeLeftInSecondsOfWorkWeek = (
+  timeWorkedInSecondsThisWeek: number,
+  daysInWorkWeek?: number,
+  hoursInWorkDay?: number
+): number => {
+  const daysWorked = daysInWorkWeek || 5;
+  const hoursPerDay = hoursInWorkDay || 7.6;
+
+  return daysWorked * hoursPerDay * 60 * 60 - timeWorkedInSecondsThisWeek;
+};
