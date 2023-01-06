@@ -129,7 +129,7 @@ export default function App() {
       <TimerDisplay seconds={timeLeftSeconds} message="Time left:" />
       <div>
         <h2 style={{ display: "inline-block", marginRight: 10 }}>Work Totals</h2>
-        <Button onClick={handleRefresh} label="Refresh" />
+        {timerOn ? <Button onClick={handleRefresh} label="Refresh" /> : null}
       </div>
       <WorkHistory
         timeWorkedSeconds={totalTimeWorkedSeconds}
