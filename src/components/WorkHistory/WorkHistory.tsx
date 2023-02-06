@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   getTimeLeftInSecondsOfWorkWeek,
+  getValidDateObjectFromLocalDateString,
   getWeekNumberOfYearFromDateKey,
   getYearFromLocaleDateString,
 } from "../../utils/DateUtils";
@@ -66,9 +67,14 @@ export const WorkHistory = (props: WorkHistoryProps) => {
     );
 
     const workHistoryWeeks: WorkHistoryWeek[] = uniqueWeeks.map((week) => {
-      const filteredHistories = histories.filter(
-        (history) => history.weekNumber === week
-      );
+      const filteredHistories = histories
+        .filter((history) => history.weekNumber === week)
+        .sort(
+          (a, b) =>
+            getValidDateObjectFromLocalDateString(b.date).getTime() -
+            getValidDateObjectFromLocalDateString(a.date).getTime()
+        );
+
       const totalTimeWorkedInSeconds = filteredHistories
         .map((history) => history.workedTimeInSeconds)
         .reduce((a, b) => a + b);
@@ -81,7 +87,10 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       };
     });
 
-    workHistoryWeeks.sort((a, b) => (b.year || 0) - (a.year || 0));
+    workHistoryWeeks
+      .sort((a, b) => b.week - a.week)
+      .sort((a, b) => (b.year || 0) - (a.year || 0));
+
     setWorkHistories(workHistoryWeeks);
   }, [props]);
 
