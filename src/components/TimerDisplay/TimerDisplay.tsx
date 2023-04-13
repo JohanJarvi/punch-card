@@ -9,23 +9,30 @@ interface TimerDisplayProps {
 
 export const TimerDisplay = (props: TimerDisplayProps) => {
   const [timeWorkedDisplay, setTimeWorkedDisplay] = useState("00:00:00");
+  const [displayMessage, setDisplayMessage] = useState(props.message);
 
   useEffect(() => {
-    setTimeWorkedDisplay(
-      convertSecondsToHoursMinutesSecondsString(props.seconds)
-    );
+    if (props.seconds < 0) {
+      setDisplayMessage("Overtime worked: ");
+      setTimeWorkedDisplay(
+        convertSecondsToHoursMinutesSecondsString(Math.abs(props.seconds))
+      );
+    } else {
+      setTimeWorkedDisplay(
+        convertSecondsToHoursMinutesSecondsString(props.seconds)
+      );
+    }
   }, [props]);
 
   return (
     <div>
+      <p>
+        <strong>{displayMessage}</strong>{" "}
+        <span className="clock">{timeWorkedDisplay}</span>
+      </p>
       {props.seconds < 0 ? (
         <p>You are now working overtime. Stop that!</p>
-      ) : (
-        <p>
-          <strong>{props.message}</strong>{" "}
-          <span className="clock">{timeWorkedDisplay}</span>
-        </p>
-      )}
+      ) : null}
     </div>
   );
 };
