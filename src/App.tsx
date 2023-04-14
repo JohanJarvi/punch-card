@@ -11,8 +11,6 @@ export default function App() {
   const [totalTimeWorkedSeconds, setTotalTimeWorkedSeconds] = useState(
     Number.parseInt(localStorage.getItem(`${dateToday}-total`) || "0")
   );
-  const [timeLeftSeconds, setTimeLeftSeconds] = useState(0);
-  // const [currentTotalTimeWorked, setCurrentTotalTimeWorked] = useState(0);
   const [timerStartDateTime, setTimerStartDateTime] = useState<Date>();
   const [timerStopDateTime, setTimerStopDateTime] = useState<Date>();
   const [timerOn, toggleTimer] = useState(false);
@@ -97,14 +95,6 @@ export default function App() {
     const date = new Date().toLocaleDateString();
 
     localStorage.setItem(date, timeWorkedSeconds.toString());
-
-    const workDayInSeconds = 7.6 * 60 * 60;
-    const totalSoFar = Number.parseInt(
-      localStorage.getItem(`${date}-total`) || "0"
-    );
-
-    // setCurrentTotalTimeWorked(timeWorkedSeconds + totalSoFar);
-    setTimeLeftSeconds(workDayInSeconds - timeWorkedSeconds - totalSoFar);
   }, [timeWorkedSeconds]);
 
   const handleTimerToggle = () => toggleTimer(!timerOn);
@@ -135,11 +125,7 @@ export default function App() {
         onClick={handleTimerToggle}
         label={timerOn ? "Stop working" : "Begin working"}
       />
-      <TimerDisplay
-        seconds={timeLeftSeconds}
-        timeLeftDailyTotals={timeLeftWeekSeconds}
-        message="Time left:"
-      />
+      <TimerDisplay seconds={timeLeftWeekSeconds} message="Time left:" />
       <div>
         <h2 style={{ display: "inline-block", marginRight: 10 }}>
           Work Totals

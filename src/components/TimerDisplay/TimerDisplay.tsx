@@ -4,7 +4,6 @@ import "./TimerDisplay.css";
 
 interface TimerDisplayProps {
   seconds: number;
-  timeLeftDailyTotals: number;
   message?: string;
 }
 
@@ -13,19 +12,15 @@ export const TimerDisplay = (props: TimerDisplayProps) => {
   const [displayMessage, setDisplayMessage] = useState(props.message);
 
   useEffect(() => {
-    if (props.timeLeftDailyTotals < 0) {
+    if (props.seconds < 0) {
       setDisplayMessage("Overtime worked: ");
 
       setTimerDisplay(
-        convertSecondsToHoursMinutesSecondsString(
-          Math.abs(props.timeLeftDailyTotals)
-        )
+        convertSecondsToHoursMinutesSecondsString(Math.abs(props.seconds))
       );
     } else {
       setDisplayMessage("Time left: ");
-      setTimerDisplay(
-        convertSecondsToHoursMinutesSecondsString(props.timeLeftDailyTotals)
-      );
+      setTimerDisplay(convertSecondsToHoursMinutesSecondsString(props.seconds));
     }
   }, [props]);
 
