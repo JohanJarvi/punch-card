@@ -4,22 +4,46 @@ import "./TimerDisplay.css";
 
 interface TimerDisplayProps {
   seconds: number;
+  timeLeftDailyTotals: number;
   message?: string;
 }
 
 export const TimerDisplay = (props: TimerDisplayProps) => {
-  const [timeWorkedDisplay, setTimeWorkedDisplay] = useState("00:00:00");
+  const [timerDisplay, setTimerDisplay] = useState("00:00:00");
   const [displayMessage, setDisplayMessage] = useState(props.message);
 
   useEffect(() => {
-    if (props.seconds < 0) {
+    if (props.seconds < 0 || props.timeLeftDailyTotals < 0) {
       setDisplayMessage("Overtime worked: ");
-      setTimeWorkedDisplay(
-        convertSecondsToHoursMinutesSecondsString(Math.abs(props.seconds))
-      );
+
+      if (props.seconds < 0 && props.timeLeftDailyTotals < 0) {
+        setTimerDisplay(
+          convertSecondsToHoursMinutesSecondsString(
+            Math.max(
+              Math.abs(props.seconds),
+              Math.abs(props.timeLeftDailyTotals)
+            )
+          )
+        );
+      }
+
+      if (props.seconds < 0) {
+        setTimerDisplay(
+          convertSecondsToHoursMinutesSecondsString(Math.abs(props.seconds))
+        );
+      }
+
+      if (props.timeLeftDailyTotals < 0) {
+        setTimerDisplay(
+          convertSecondsToHoursMinutesSecondsString(
+            Math.abs(props.timeLeftDailyTotals)
+          )
+        );
+      }
     } else {
-      setTimeWorkedDisplay(
-        convertSecondsToHoursMinutesSecondsString(props.seconds)
+      setDisplayMessage("Time left: ");
+      setTimerDisplay(
+        convertSecondsToHoursMinutesSecondsString(props.timeLeftDailyTotals)
       );
     }
   }, [props]);
@@ -28,7 +52,7 @@ export const TimerDisplay = (props: TimerDisplayProps) => {
     <div>
       <p>
         <strong>{displayMessage}</strong>{" "}
-        <span className="clock">{timeWorkedDisplay}</span>
+        <span className="clock">{timerDisplay}</span>
       </p>
       {props.seconds < 0 ? (
         <p>You are now working overtime. Stop that!</p>

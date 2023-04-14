@@ -18,9 +18,10 @@ export type WorkHistoryDisplay = {
 };
 
 interface WorkHistoryProps {
-  timeWorkedSeconds: number;
+  totalTimeWorkedSeconds: number;
   onSave: () => void;
   onEdit: () => void;
+  onUpdate: (timeRemainingToReachDaysWorkedSoFarTotal: number) => void;
 }
 
 interface WorkHistoryWeek {
@@ -28,6 +29,7 @@ interface WorkHistoryWeek {
   histories: WorkHistoryDisplay[];
   totalTimeWorkedInSeconds: number;
   year: number;
+  timeRemainingPerDailyAverageInSeconds: number;
 }
 
 export interface ScreenCoordinates {
@@ -79,11 +81,15 @@ export const WorkHistory = (props: WorkHistoryProps) => {
         .map((history) => history.workedTimeInSeconds)
         .reduce((a, b) => a + b);
 
+      const timeRemainingPerDailyAverageInSeconds =
+        filteredHistories.length * 7.6 * 60 * 60 - totalTimeWorkedInSeconds;
+
       return {
         week,
         histories: filteredHistories,
-        totalTimeWorkedInSeconds,
+        totalTimeWorkedInSeconds: totalTimeWorkedInSeconds,
         year: filteredHistories[0].year,
+        timeRemainingPerDailyAverageInSeconds,
       };
     });
 
@@ -91,6 +97,18 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       .sort((a, b) => b.week - a.week)
       .sort((a, b) => (b.year || 0) - (a.year || 0));
 
+    const additionalTimeWorked = Number.parseInt(
+      localStorage.getItem(`${new Date().toLocaleDateString()}-safeguard`) ||
+        "0"
+    );
+
+    workHistoryWeeks[0].histories[0].workedTimeInSeconds +=
+      additionalTimeWorked;
+    workHistoryWeeks[0].totalTimeWorkedInSeconds += additionalTimeWorked;
+    props.onUpdate(
+      workHistoryWeeks[0].timeRemainingPerDailyAverageInSeconds -
+        additionalTimeWorked
+    );
     setWorkHistories(workHistoryWeeks);
   }, [props]);
 
@@ -126,6 +144,8 @@ export const WorkHistory = (props: WorkHistoryProps) => {
         ),
         totalTimeWorkedInSeconds: workHistoryWeek.totalTimeWorkedInSeconds,
         year: workHistoryWeek.year,
+        timeRemainingPerDailyAverageInSeconds:
+          workHistoryWeek.timeRemainingPerDailyAverageInSeconds,
       }))
       .filter((workHistoryWeek) => workHistoryWeek.histories.length > 0);
 
