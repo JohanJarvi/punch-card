@@ -12,9 +12,11 @@ export default function App() {
     Number.parseInt(localStorage.getItem(`${dateToday}-total`) || "0")
   );
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(0);
+  // const [currentTotalTimeWorked, setCurrentTotalTimeWorked] = useState(0);
   const [timerStartDateTime, setTimerStartDateTime] = useState<Date>();
   const [timerStopDateTime, setTimerStopDateTime] = useState<Date>();
   const [timerOn, toggleTimer] = useState(false);
+  const [timeLeftWeekSeconds, setTimeLeftWeekSeconds] = useState(0);
 
   const setStartTime = () => {
     const localeDateString = new Date().toLocaleDateString();
@@ -101,6 +103,7 @@ export default function App() {
       localStorage.getItem(`${date}-total`) || "0"
     );
 
+    // setCurrentTotalTimeWorked(timeWorkedSeconds + totalSoFar);
     setTimeLeftSeconds(workDayInSeconds - timeWorkedSeconds - totalSoFar);
   }, [timeWorkedSeconds]);
 
@@ -111,12 +114,18 @@ export default function App() {
 
   const handleRefresh = () => {
     const date = new Date().toLocaleDateString();
-    const safeGuard = Number.parseInt(localStorage.getItem(`${date}-safeguard`) || "0");
+    const safeGuard = Number.parseInt(
+      localStorage.getItem(`${date}-safeguard`) || "0"
+    );
     incrementWorkTotal(safeGuard, date);
     localStorage.setItem(date, "0");
     localStorage.setItem(`${date}-safeguard`, "0");
     setStartTime();
-  }
+  };
+
+  const handleUpdate = (input: number) => {
+    setTimeLeftWeekSeconds(input);
+  };
 
   return (
     <div className="container">
@@ -126,15 +135,22 @@ export default function App() {
         onClick={handleTimerToggle}
         label={timerOn ? "Stop working" : "Begin working"}
       />
-      <TimerDisplay seconds={timeLeftSeconds} message="Time left:" />
+      <TimerDisplay
+        seconds={timeLeftSeconds}
+        timeLeftDailyTotals={timeLeftWeekSeconds}
+        message="Time left:"
+      />
       <div>
-        <h2 style={{ display: "inline-block", marginRight: 10 }}>Work Totals</h2>
+        <h2 style={{ display: "inline-block", marginRight: 10 }}>
+          Work Totals
+        </h2>
         {timerOn ? <Button onClick={handleRefresh} label="Refresh" /> : null}
       </div>
       <WorkHistory
-        timeWorkedSeconds={totalTimeWorkedSeconds}
+        totalTimeWorkedSeconds={totalTimeWorkedSeconds}
         onSave={handleSave}
         onEdit={handleEdit}
+        onUpdate={handleUpdate}
       />
     </div>
   );
