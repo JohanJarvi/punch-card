@@ -1,3 +1,13 @@
 th {
   text-align: left;
 }
+
+.clickable-text {
+  cursor: pointer;
+  font-size: medium;
+  font-weight: bolder;
+}
+
+.clickable-text:hover {
+  color: grey;
+}

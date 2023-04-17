@@ -103,17 +103,6 @@ export default function App() {
   const handleSave = () => toggleTimer(true);
   const handleEdit = () => toggleTimer(false);
 
-  const handleRefresh = () => {
-    const date = new Date().toLocaleDateString();
-    const safeGuard = Number.parseInt(
-      localStorage.getItem(`${date}-safeguard`) || "0"
-    );
-    incrementWorkTotal(safeGuard, date);
-    localStorage.setItem(date, "0");
-    localStorage.setItem(`${date}-safeguard`, "0");
-    setStartTime();
-  };
-
   const handleUpdate = (input: number) => {
     setTimeLeftWeekSeconds(input);
   };
@@ -131,7 +120,6 @@ export default function App() {
         <h2 style={{ display: "inline-block", marginRight: 10 }}>
           Work Totals
         </h2>
-        {timerOn ? <Button onClick={handleRefresh} label="Refresh" /> : null}
       </div>
       <WorkHistory
         totalTimeWorkedSeconds={totalTimeWorkedSeconds}

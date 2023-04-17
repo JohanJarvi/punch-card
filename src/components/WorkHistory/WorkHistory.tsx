@@ -10,6 +10,7 @@ import FileSaver from "file-saver";
 import "./WorkHistory.css";
 import { Button } from "../Button/Button";
 import { Editor } from "./Editor/Editor";
+import { FaEdit, FaFileExport, FaPenSquare, FaTimes } from "react-icons/fa";
 
 export type WorkHistoryDisplay = {
   date: string;
@@ -212,16 +213,18 @@ export const WorkHistory = (props: WorkHistoryProps) => {
           />
         ) : null}
       </div>
-      <Button label="Export all" onClick={handleExportAll} />
+      <div onClick={handleExportAll} className="clickable-text">
+        Export all <FaFileExport />
+      </div>
       {workHistories.map((workHistory) => {
         return (
           <div key={workHistory.week}>
             <h3>
               Week {workHistory.week} (
               {workHistory.histories[0].date.substring(6, 10)}){" "}
-              <Button
+              <FaFileExport
+                className="icon"
                 onClick={(event) => handleExport(event, workHistory)}
-                label="Export"
               />
             </h3>
             <table>
@@ -243,15 +246,15 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                       )}
                     </td>
                     <td>
-                      <Button
+                      <FaEdit
+                        className="icon"
                         onClick={(event) => handleEdit(event, history)}
-                        label="Edit"
                       />
                     </td>
                     <td>
-                      <Button
+                      <FaTimes
+                        className="icon"
                         onClick={(event) => handleDelete(event, history.date)}
-                        label="Delete"
                       />
                     </td>
                   </tr>
