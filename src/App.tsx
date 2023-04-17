@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { Button } from "./components/Button/Button";
 import { TimerDisplay } from "./components/TimerDisplay/TimerDisplay";
@@ -15,6 +15,7 @@ export default function App() {
   const [timerStopDateTime, setTimerStopDateTime] = useState<Date>();
   const [timerOn, toggleTimer] = useState(false);
   const [timeLeftWeekSeconds, setTimeLeftWeekSeconds] = useState(0);
+  // const [] = useRef();
 
   const setStartTime = () => {
     const localeDateString = new Date().toLocaleDateString();

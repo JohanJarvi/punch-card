@@ -6,9 +6,10 @@ import {
   getYearFromLocaleDateString,
 } from "../../utils/DateUtils";
 import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
+import FileSaver from "file-saver";
+import "./WorkHistory.css";
 import { Button } from "../Button/Button";
 import { Editor } from "./Editor/Editor";
-import "./WorkHistory.css";
 
 export type WorkHistoryDisplay = {
   date: string;
@@ -152,6 +153,29 @@ export const WorkHistory = (props: WorkHistoryProps) => {
     setWorkHistories(newHistories);
   };
 
+  const handleExport = (event: any, week: WorkHistoryWeek) => {
+    const blobHeadings =
+      "Year,Week#,Date,Time Worked,Time Worked (sec),Hours Worked\n";
+
+    const lines = week.histories.map(
+      (history) =>
+        `${history.year},${history.weekNumber},${
+          history.date
+        },${convertSecondsToHoursMinutesSecondsString(
+          history.workedTimeInSeconds
+        )},${history.workedTimeInSeconds},${
+          history.workedTimeInSeconds / 60 / 60
+        }\n`
+    );
+
+    FileSaver.saveAs(
+      new Blob([blobHeadings, ...lines], {
+        type: "text/csv;charset=utf-8",
+      }),
+      "test.csv"
+    );
+  };
+
   return (
     <div>
       <div>
@@ -171,7 +195,11 @@ export const WorkHistory = (props: WorkHistoryProps) => {
           <div key={workHistory.week}>
             <h3>
               Week {workHistory.week} (
-              {workHistory.histories[0].date.substring(6, 10)})
+              {workHistory.histories[0].date.substring(6, 10)}){" "}
+              <Button
+                onClick={(event) => handleExport(event, workHistory)}
+                label="Export"
+              />
             </h3>
             <table>
               <thead>
