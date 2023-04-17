@@ -169,7 +169,7 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       new Blob([blobHeadings, ...lines], {
         type: "text/csv;charset=utf-8",
       }),
-      `${week.year}-Week_${week.week}.csv`
+      `${week.year}-Week_${week.week}-${new Date().toLocaleDateString()}.csv`
     );
   };
 
