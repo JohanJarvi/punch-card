@@ -1,3 +1,11 @@
 .container {
   margin: 20px;
 }
+
+.icon {
+  cursor: pointer;
+}
+
+.icon:hover {
+  color: grey;
+}
