@@ -154,14 +154,11 @@ export const WorkHistory = (props: WorkHistoryProps) => {
   };
 
   const handleExport = (event: any, week: WorkHistoryWeek) => {
-    const blobHeadings =
-      "Year,Week#,Date,Time Worked,Time Worked (sec),Hours Worked\n";
+    const blobHeadings = "Date,Time Worked,Time Worked (sec),Hours Worked\n";
 
     const lines = week.histories.map(
       (history) =>
-        `${history.year},${history.weekNumber},${
-          history.date
-        },${convertSecondsToHoursMinutesSecondsString(
+        `${history.date},${convertSecondsToHoursMinutesSecondsString(
           history.workedTimeInSeconds
         )},${history.workedTimeInSeconds},${
           history.workedTimeInSeconds / 60 / 60
@@ -172,7 +169,7 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       new Blob([blobHeadings, ...lines], {
         type: "text/csv;charset=utf-8",
       }),
-      "test.csv"
+      `${week.year}-Week_${week.week}.csv`
     );
   };
 
