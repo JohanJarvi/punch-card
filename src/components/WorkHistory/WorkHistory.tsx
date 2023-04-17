@@ -194,7 +194,7 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       new Blob([blobHeadings, ...lines], {
         type: "text/csv;charset=utf-8",
       }),
-      "all_work_history.csv"
+      `all_work_history-${new Date().toLocaleDateString()}.csv`
     );
   };
 
