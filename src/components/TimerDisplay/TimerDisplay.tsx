@@ -16,11 +16,15 @@ export const TimerDisplay = (props: TimerDisplayProps) => {
       setDisplayMessage("Overtime worked: ");
 
       setTimerDisplay(
-        convertSecondsToHoursMinutesSecondsString(Math.abs(props.seconds))
+        convertSecondsToHoursMinutesSecondsString(
+          Math.abs(Math.round(props.seconds))
+        )
       );
     } else {
       setDisplayMessage("Time left: ");
-      setTimerDisplay(convertSecondsToHoursMinutesSecondsString(props.seconds));
+      setTimerDisplay(
+        convertSecondsToHoursMinutesSecondsString(Math.round(props.seconds))
+      );
     }
   }, [props]);
 
