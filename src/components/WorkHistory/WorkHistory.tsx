@@ -288,7 +288,18 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                             workHistory.totalTimeWorkedInSeconds
                           )
                         )}
-                      </strong>
+                      </strong>{" "}
+                      /{" "}
+                      <em>
+                        {(
+                          (getTimeLeftInSecondsOfWorkWeek(
+                            workHistory.totalTimeWorkedInSeconds
+                          ) /
+                            (38 * 60 * 60)) *
+                          100
+                        ).toFixed(4)}
+                        % remaining
+                      </em>
                     </td>
                   </tr>
                 ) : null}
