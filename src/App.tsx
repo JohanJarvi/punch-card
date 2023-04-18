@@ -115,7 +115,14 @@ export default function App() {
         onClick={handleTimerToggle}
         label={timerOn ? "Stop working" : "Begin working"}
       />
-      <TimerDisplay seconds={timeLeftWeekSeconds} message="Time left:" />
+      <TimerDisplay
+        seconds={timeLeftWeekSeconds}
+        message="Time left:"
+        timeLeftPercentage={{
+          showTimeLeftPercentage: true,
+          setPointInSeconds: 7.6 * 60 * 60,
+        }}
+      />
       <div>
         <h2 style={{ display: "inline-block", marginRight: 10 }}>
           Work Totals
