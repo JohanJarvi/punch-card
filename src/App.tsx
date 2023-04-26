@@ -22,6 +22,7 @@ export default function App() {
     const newStartTime = new Date();
     localStorage.setItem(`${localeDateString}-start`, new Date().toString());
     setTimerStartDateTime(newStartTime);
+    incrementWorkTotal(0, localeDateString);
   };
 
   const setStopTime = () => {
