@@ -6,6 +6,7 @@ th {
   cursor: pointer;
   font-size: medium;
   font-weight: bolder;
+  display: inline;
 }
 
 .clickable-text:hover {
