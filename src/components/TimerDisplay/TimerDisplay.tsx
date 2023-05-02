@@ -17,6 +17,7 @@ export const TimerDisplay = (props: TimerDisplayProps) => {
   const [timerDisplay, setTimerDisplay] = useState("00:00:00");
   const [displayMessage, setDisplayMessage] = useState(props.message);
   const [percentageRemaining, setPercentageRemaining] = useState<number>(0);
+  const [finishTime, setFinishTime] = useState("00:00:00");
 
   useEffect(() => {
     if (props.seconds < 0) {
@@ -42,6 +43,10 @@ export const TimerDisplay = (props: TimerDisplayProps) => {
       } else {
         setPercentageRemaining(0);
       }
+
+      const t = new Date();
+      t.setSeconds(t.getSeconds() + props.seconds);
+      setFinishTime(t.toLocaleString());
     }
   }, [props]);
 
@@ -59,6 +64,9 @@ export const TimerDisplay = (props: TimerDisplayProps) => {
           <em>{percentageRemaining.toFixed(4)}% left today</em>
         </p>
       ) : null}
+      <p>
+        Finish time: <strong>{finishTime}</strong>
+      </p>
     </div>
   );
 };
