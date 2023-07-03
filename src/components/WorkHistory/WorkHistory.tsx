@@ -104,12 +104,17 @@ export const WorkHistory = (props: WorkHistoryProps) => {
         "0"
     );
 
+    const timeInLieu = calculateTotalTimeInLieu(workHistoryWeeks);
+    const additionalTimeWorkedWithTimeInLieu =
+      additionalTimeWorked - timeInLieu;
+
     workHistoryWeeks[0].histories[0].workedTimeInSeconds +=
-      additionalTimeWorked;
-    workHistoryWeeks[0].totalTimeWorkedInSeconds += additionalTimeWorked;
+      additionalTimeWorkedWithTimeInLieu;
+    workHistoryWeeks[0].totalTimeWorkedInSeconds +=
+      additionalTimeWorkedWithTimeInLieu;
     props.onUpdate(
       workHistoryWeeks[0].timeRemainingPerDailyAverageInSeconds -
-        additionalTimeWorked
+        additionalTimeWorkedWithTimeInLieu
     );
     setWorkHistories(workHistoryWeeks);
   }, [props]);
@@ -197,6 +202,22 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       }),
       `all_work_history-${new Date().toLocaleDateString()}.csv`
     );
+  };
+
+  const calculateTotalTimeInLieu = (
+    workHistoryWeeks: WorkHistoryWeek[]
+  ): number => {
+    const currentWeek = getWeekNumberOfYearFromDateKey(
+      new Date().toLocaleDateString()
+    );
+
+    return workHistoryWeeks
+      .filter((workHistoryWeek) => workHistoryWeek.week !== currentWeek)
+      .map(
+        (workHistoryWeek) =>
+          workHistoryWeek.timeRemainingPerDailyAverageInSeconds
+      )
+      .reduce((a, b) => a + b);
   };
 
   return (
