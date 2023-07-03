@@ -211,13 +211,15 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       new Date().toLocaleDateString()
     );
 
-    return workHistoryWeeks
-      .filter((workHistoryWeek) => workHistoryWeek.week !== currentWeek)
-      .map(
-        (workHistoryWeek) =>
-          workHistoryWeek.timeRemainingPerDailyAverageInSeconds
-      )
-      .reduce((a, b) => a + b);
+    return Math.round(
+      workHistoryWeeks
+        .filter((workHistoryWeek) => workHistoryWeek.week !== currentWeek)
+        .map(
+          (workHistoryWeek) =>
+            workHistoryWeek.timeRemainingPerDailyAverageInSeconds
+        )
+        .reduce((a, b) => a + b)
+    );
   };
 
   return (
