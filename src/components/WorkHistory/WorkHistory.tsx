@@ -109,9 +109,8 @@ export const WorkHistory = (props: WorkHistoryProps) => {
       additionalTimeWorked - timeInLieu;
 
     workHistoryWeeks[0].histories[0].workedTimeInSeconds +=
-      additionalTimeWorkedWithTimeInLieu;
-    workHistoryWeeks[0].totalTimeWorkedInSeconds +=
-      additionalTimeWorkedWithTimeInLieu;
+      additionalTimeWorked;
+    workHistoryWeeks[0].totalTimeWorkedInSeconds += additionalTimeWorked;
     props.onUpdate(
       workHistoryWeeks[0].timeRemainingPerDailyAverageInSeconds -
         additionalTimeWorkedWithTimeInLieu
