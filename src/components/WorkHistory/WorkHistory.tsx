@@ -267,7 +267,7 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                         color:
                           workHistory.totalTimeWorkedInSeconds >
                           Math.round(
-                            workHistory.histories.length * 7.6 * 60 * 60
+                            workHistory.histories.length * 7.6 * 60 * 60 + 300
                           )
                             ? "red"
                             : "black",
