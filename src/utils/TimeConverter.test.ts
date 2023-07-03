@@ -66,4 +66,26 @@ describe("convertSecondsToHoursMinutesSeconds", () => {
     // Then
     expect(result).toBe("02:11:39");
   });
+
+  it("Should show correctly with negative seconds", () => {
+    // Given
+    const input = -7899;
+
+    // When
+    const result = convertSecondsToHoursMinutesSecondsString(input);
+
+    // Then
+    expect(result).toBe("-02:11:39");
+  });
+
+  it("Should show correctly negative low seconds", () => {
+    // Given
+    const input = -35;
+
+    // When
+    const result = convertSecondsToHoursMinutesSecondsString(input);
+
+    // Then
+    expect(result).toBe("-00:00:35");
+  });
 });

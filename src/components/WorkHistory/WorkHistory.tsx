@@ -282,7 +282,14 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                       {convertSecondsToHoursMinutesSecondsString(
                         Math.round(workHistory.histories.length * 7.6 * 60 * 60)
                       )}{" "}
-                      ({workHistory.histories.length} day total)
+                      (
+                      {convertSecondsToHoursMinutesSecondsString(
+                        workHistory.totalTimeWorkedInSeconds -
+                          Math.round(
+                            workHistory.histories.length * 7.6 * 60 * 60
+                          )
+                      )}
+                      )
                     </em>
                   </td>
                 </tr>
