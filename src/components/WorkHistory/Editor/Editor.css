@@ -3,8 +3,8 @@
   position: absolute;
   background: #f0f0f0;
   width: 400px;
-  filter: drop-shadow(4px 4px 4px #7f7f7f);
-  border: 1px solid #7f7f7f;
+  filter: drop-shadow(4px 4px 4px #C3CDDF);
+  border: 2px solid #C3CDDF;
 }
 
 .main-flex-container {
@@ -25,4 +25,10 @@
   margin: 20px;
   display: flex;
   justify-content: right;
+}
+
+.input {
+  color: #1E212B;
+  border: 2px solid #C3CDDF;
+  background-color: #C3CDDF;
 }

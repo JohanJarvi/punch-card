@@ -282,8 +282,8 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                   </tr>
                 ))}
                 <tr>
-                  <td style={{ borderTop: "1px solid black" }}>Week total</td>
-                  <td style={{ borderTop: "1px solid black" }} colSpan={3}>
+                  <td style={{ borderTop: "1px solid #C3CDDF" }}>Week total</td>
+                  <td style={{ borderTop: "1px solid #C3CDDF" }} colSpan={3}>
                     <strong
                       style={{
                         color:
@@ -291,8 +291,8 @@ export const WorkHistory = (props: WorkHistoryProps) => {
                           Math.round(
                             workHistory.histories.length * 7.6 * 60 * 60 + 300
                           )
-                            ? "red"
-                            : "black",
+                            ? "#932A2B"
+                            : "",
                       }}
                     >
                       {convertSecondsToHoursMinutesSecondsString(

@@ -1,20 +1,15 @@
 .button {
-  border: 1px solid #7f7f7f;
+  color:#C3CDDF;
+  border: 2px solid #C3CDDF;
+  background-color: #1E212B;
   border-radius: 5px;
   cursor: pointer;
+  padding: 10px;
+  font-size: large;
 }
 
 .active {
-  padding: 10px;
-  font-size: large;
-  background-color: #f63b3b;
-  border: 1px solid #f63b3b;
-  color: #ffffff;
-}
-
-.inactive {
-  padding: 10px;
-  font-size: large;
-  background-color: #9af089;
-  border: 1px solid #67c24c;
+  color: #1E212B;
+  border: 2px solid #C3CDDF;
+  background-color: #C3CDDF;
 }

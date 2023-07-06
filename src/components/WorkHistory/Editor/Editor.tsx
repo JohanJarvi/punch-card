@@ -62,6 +62,7 @@ export const Editor = (props: EditorProps) => {
       style={{
         left: props.positionCoordinates?.x,
         top: props.positionCoordinates?.y,
+        backgroundColor: "#1E212B",
       }}
     >
       <div className="main-flex-container">
@@ -79,19 +80,34 @@ export const Editor = (props: EditorProps) => {
       <div className="flex-container">
         <div className="flex-item">Hours</div>
         <div className="flex-item">
-          <input id="hours" type="number" onChange={handleHoursChanged} />
+          <input
+            className="input"
+            id="hours"
+            type="number"
+            onChange={handleHoursChanged}
+          />
         </div>
       </div>
       <div className="flex-container">
         <div className="flex-item">Minutes</div>
         <div className="flex-item">
-          <input id="minutes" type="number" onChange={handleMinutesChanged} />
+          <input
+            className="input"
+            id="minutes"
+            type="number"
+            onChange={handleMinutesChanged}
+          />
         </div>
       </div>
       <div className="flex-container">
         <div className="flex-item">Seconds</div>
         <div className="flex-item">
-          <input id="seconds" type="number" onChange={handleSecondsChanged} />
+          <input
+            className="input"
+            id="seconds"
+            type="number"
+            onChange={handleSecondsChanged}
+          />
         </div>
       </div>
       {saveDisabled ? null : (
