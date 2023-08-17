@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { WorkHistory } from "./components/WorkHistory/workHistory";
+import { WorkHistory } from "./components/WorkHistory/WorkHistory";
 import { Clock } from "./components/clock";
 import { Workday } from "./types/WorkHistory";
 
