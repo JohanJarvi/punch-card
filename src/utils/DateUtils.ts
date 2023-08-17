@@ -23,6 +23,14 @@ export const getValidDateObjectFromLocalDateString = (
   return new Date(isoDate);
 };
 
+export const isValidDateKey = (
+  possibleDateKey: string
+): boolean => {
+  const re = /\d+\/\d+\/\d{4}/gm;
+
+  return re.test(possibleDateKey);
+};
+
 export const getEnumeratedWeekDayFromLocaleDateString = (
   localeDateString: string
 ): number => {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { WorkHistory } from "./components/WorkHistory/WorkHistory";
 import { Clock } from "./components/clock";
 import { Workday } from "./types/WorkHistory";
+import { isValidDateKey } from "./utils/DateUtils";
 
 export default function App() {
   const [clockSave, toggleClockSave] = useState(false);
@@ -14,6 +15,8 @@ export default function App() {
       const key = localStorage.key(i) || "";
       if (key.includes("-start")) continue;
       if (key.includes("-current")) continue;
+
+      if (!isValidDateKey(key)) continue;
 
       const item = Number.parseInt(localStorage.getItem(key) || "");
       histories.push({ date: key, time: item });
