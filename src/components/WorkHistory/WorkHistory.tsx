@@ -51,8 +51,9 @@ export const WorkHistory = ({
     const totalLieuTime = historyWeeks
       .map((historyWeek) => historyWeek.lieuTime)
       .reduce((a, b) => a + b);
+
     onHistoryUpdate(totalLieuTime);
-  }, [historyWeeks]);
+  }, [historyWeeks, onHistoryUpdate]);
 
   return (
     <>

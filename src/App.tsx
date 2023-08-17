@@ -1,13 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { WorkHistory } from "./components/WorkHistory/workHistory";
 import { Clock } from "./components/clock";
 import { Workday } from "./types/WorkHistory";
 
 export default function App() {
-  const [workday, setWorkday] = useState<Workday>();
+  const [clockSave, toggleClockSave] = useState(false);
   const [timeInLieu, setTimeInLieu] = useState(7.6 * 60 * 60);
+  const [histories, setHistories] = useState<Workday[]>([]);
 
-  const workHistories: Workday[] = useMemo(() => {
+  useEffect(() => {
     let histories = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i) || "";
@@ -17,14 +18,14 @@ export default function App() {
       const item = Number.parseInt(localStorage.getItem(key) || "");
       histories.push({ date: key, time: item });
     }
-    return histories;
-  }, [workday]);
+    setHistories(histories);
+  }, [clockSave]);
 
   const handleClockSave = (time: number) => {
     const localeDateString = new Date().toLocaleDateString();
 
     localStorage.setItem(localeDateString, time.toString());
-    setWorkday({ date: localeDateString, time });
+    toggleClockSave(!clockSave);
   };
 
   return (
@@ -35,7 +36,7 @@ export default function App() {
         onSave={(time: number) => handleClockSave(time)}
       ></Clock>
       <WorkHistory
-        workHistories={workHistories}
+        workHistories={histories}
         onHistoryUpdate={(timeInLieu) => setTimeInLieu(timeInLieu)}
       ></WorkHistory>
     </>

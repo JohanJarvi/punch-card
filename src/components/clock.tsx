@@ -8,21 +8,18 @@ interface ClockProps {
 }
 
 export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
-  const localDateString = new Date().toLocaleDateString();
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
-  const getStartDateFromLocalStorage = (): Date => {
-    const utcString = localStorage.getItem(`${localDateString}-start`);
-    return utcString ? new Date(utcString) : new Date();
-  };
-
-  useEffect(() => {
-    performSave();
-  }, []);
-
   useEffect(() => {
     let intervalId: NodeJS.Timer;
+
+    const getStartDateFromLocalStorage = (): Date => {
+      const utcString = localStorage.getItem(
+        `${new Date().toLocaleDateString()}-start`
+      );
+      return utcString ? new Date(utcString) : new Date();
+    };
 
     if (isRunning) {
       const startDateLocalStorage = getStartDateFromLocalStorage();
@@ -46,7 +43,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
 
   const performSave = () => {
     const currentTimeWorked = Number(
-      localStorage.getItem(localDateString) || ""
+      localStorage.getItem(new Date().toLocaleDateString()) || ""
     );
 
     const totalTimeWorked = currentTimeWorked + time;
