@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { convertSecondsToHoursMinutesSecondsString } from "../utils/TimeConverter";
 import { getSecondsDiff } from "../utils/DateUtils";
 
@@ -32,8 +32,6 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
     return () => clearInterval(intervalId);
   }, [time, isRunning]);
 
-  const timeLeftInSeconds = timeInLieuInSeconds - time;
-
   const setStartTime = () => {
     localStorage.setItem(
       `${new Date().toLocaleDateString()}-start`,
@@ -51,9 +49,10 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
     onSave(totalTimeWorked);
   };
 
-  const getTimeLeftDisplay = (timeLeftInSeconds: number): string => {
-    const absoluteTimeLeftSeconds = Math.abs(timeLeftInSeconds);
-    if (timeLeftInSeconds < 0) {
+  const timeLeftDisplay = useMemo(() => {
+    const timeLeftSeconds = timeInLieuInSeconds - time;
+    const absoluteTimeLeftSeconds = Math.abs(timeInLieuInSeconds - time);
+    if (timeLeftSeconds < 0) {
       return `Overtime worked: ${convertSecondsToHoursMinutesSecondsString(
         absoluteTimeLeftSeconds
       )}`;
@@ -62,7 +61,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
         absoluteTimeLeftSeconds
       )}`;
     }
-  };
+  }, [timeInLieuInSeconds, time]);
 
   const toggleTimer = () => {
     performSave();
@@ -77,7 +76,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
 
   return (
     <>
-      <p>{getTimeLeftDisplay(timeLeftInSeconds)}</p>
+      <p>{timeLeftDisplay}</p>
       <button onClick={() => toggleTimer()}>
         {isRunning ? "Stop" : "Start"}
       </button>
