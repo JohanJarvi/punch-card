@@ -1,18 +1,12 @@
 import { useEffect } from "react";
-import { Workday } from "../../types/WorkHistory";
+import { HistoryWeek, Workday } from "../../types/WorkHistory";
 import { getWeekNumberOfYearFromDateKey } from "../../utils/DateUtils";
-import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
+import { WorkHistoryWeek } from "./WorkHistoryWeek/WorkHistoryWeek";
 
 interface WorkHistoryProps {
   workHistories: Workday[];
   onHistoryUpdate: (timeInLieu: number) => void;
 }
-
-type HistoryWeek = {
-  week: number;
-  histories: Workday[];
-  lieuTime: number;
-};
 
 export const WorkHistory = ({
   workHistories,
@@ -57,21 +51,16 @@ export const WorkHistory = ({
 
   return (
     <>
-      {historyWeeks.map((historyWeek) => {
-        return (
-          <div key={historyWeek.week}>
-            <p>{historyWeek.week}</p>
-            {historyWeek.histories.map((history) => {
-              return (
-                <p key={history.date}>
-                  {history.date}:{" "}
-                  {convertSecondsToHoursMinutesSecondsString(history.time)}
-                </p>
-              );
-            })}
-          </div>
-        );
-      })}
+      {historyWeeks
+        .sort((a, b) => (a.week > b.week ? -1 : 1))
+        .map((historyWeek) => {
+          return (
+            <WorkHistoryWeek
+              key={historyWeek.week}
+              week={historyWeek}
+            ></WorkHistoryWeek>
+          );
+        })}
     </>
   );
 };

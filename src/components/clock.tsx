@@ -64,14 +64,21 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   }, [timeInLieuInSeconds, time]);
 
   const toggleTimer = () => {
-    performSave();
     if (isRunning) {
+      performSave();
       setIsRunning(false);
       setTime(0);
     } else {
+      performSave();
       setIsRunning(true);
       setStartTime();
     }
+  };
+
+  const handleHistorySave = () => {
+    performSave();
+    setTime(0);
+    setStartTime();
   };
 
   return (
@@ -80,6 +87,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
       <button onClick={() => toggleTimer()}>
         {isRunning ? "Stop" : "Start"}
       </button>
+      <button onClick={handleHistorySave}>Save in history</button>
     </>
   );
 };
