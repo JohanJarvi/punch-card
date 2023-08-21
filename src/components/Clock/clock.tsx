@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { convertSecondsToHoursMinutesSecondsString } from "../utils/TimeConverter";
-import { getSecondsDiff } from "../utils/DateUtils";
+import { RemainingDisplay } from "./RemainingDisplay/RemainingDisplay";
+import { getSecondsDiff } from "../../utils/DateUtils";
 
 interface ClockProps {
   timeInLieuInSeconds: number;
@@ -59,23 +59,6 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
 
   const timeLeftSeconds = timeInLieuInSeconds - time;
 
-  const absoluteTimeLeftSeconds = Math.abs(timeInLieuInSeconds - time);
-  let timeLeftDisplay;
-  if (timeLeftSeconds < 0) {
-    timeLeftDisplay = `${convertSecondsToHoursMinutesSecondsString(
-      absoluteTimeLeftSeconds
-    )} overtime worked today`;
-  } else {
-    timeLeftDisplay = `${convertSecondsToHoursMinutesSecondsString(
-      absoluteTimeLeftSeconds
-    )} (${((absoluteTimeLeftSeconds / (7.6 * 60 * 60)) * 100).toFixed(
-      2
-    )}%) remains today`;
-  }
-
-  const finishDate = new Date();
-  finishDate.setSeconds(finishDate.getSeconds() + timeLeftSeconds);
-
   const toggleTimer = () => {
     if (isRunning) {
       performSave();
@@ -97,12 +80,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
 
   return (
     <>
-      <h2>{timeLeftDisplay}</h2>
-      <p>
-        {finishDate < new Date()
-          ? `You should have finished at ${finishDate.toLocaleTimeString()} on ${finishDate.toLocaleDateString()}`
-          : `You should finish at ${finishDate.toLocaleTimeString()} on ${finishDate.toLocaleDateString()}`}
-      </p>
+      <RemainingDisplay timeLeftSeconds={timeLeftSeconds}></RemainingDisplay>
       <button onClick={() => toggleTimer()}>
         {isRunning ? "Stop" : "Start"}
       </button>

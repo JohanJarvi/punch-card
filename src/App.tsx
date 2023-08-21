@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { WorkHistory } from "./components/WorkHistory/WorkHistory";
-import { Clock } from "./components/clock";
+import { Clock } from "./components/Clock/clock";
 import { Workday } from "./types/WorkHistory";
 import { isValidDateKey } from "./utils/DateUtils";
 
