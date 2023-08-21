@@ -18,25 +18,13 @@ export const RemainingDisplay = ({
   const [displayStyle, setDisplayStyle] =
     useState<DisplayStyle>("timePercentage");
 
+  const [percentageDecimals, setPercentageDecimals] = useState(2);
+
   const displayStyleNodes: DisplayStyleNode[] = [
     { curentDisplayStyle: "time", nextDisplayStyle: "percentage" },
     { curentDisplayStyle: "percentage", nextDisplayStyle: "timePercentage" },
     { curentDisplayStyle: "timePercentage", nextDisplayStyle: "time" },
   ];
-
-  //   const absoluteTimeLeftSeconds = Math.abs(timeLeftSeconds);
-  //   let timeLeftDisplay;
-  //   if (timeLeftSeconds < 0) {
-  //     timeLeftDisplay = `${convertSecondsToHoursMinutesSecondsString(
-  //       absoluteTimeLeftSeconds
-  //     )} overtime worked today`;
-  //   } else {
-  //     timeLeftDisplay = `${convertSecondsToHoursMinutesSecondsString(
-  //       absoluteTimeLeftSeconds
-  //     )} (${((absoluteTimeLeftSeconds / (7.6 * 60 * 60)) * 100).toFixed(
-  //       2
-  //     )}%) remains today`;
-  //   }
 
   const finishDate = new Date();
   finishDate.setSeconds(finishDate.getSeconds() + timeLeftSeconds);
@@ -48,7 +36,7 @@ export const RemainingDisplay = ({
     const percentageLeft = (
       (absoluteTimeLeftSeconds / (7.6 * 60 * 60)) *
       100
-    ).toFixed(2);
+    ).toFixed(percentageDecimals);
 
     switch (displayStyle) {
       case "time":
@@ -78,6 +66,16 @@ export const RemainingDisplay = ({
     );
   };
 
+  const decrementPercentageDecimalPlaces = () => {
+    if (percentageDecimals > 0) setPercentageDecimals(percentageDecimals - 1);
+    return;
+  };
+
+  const incrementPercentageDecimalPlaces = () => {
+    if (percentageDecimals < 11) setPercentageDecimals(percentageDecimals + 1);
+    return;
+  };
+
   return (
     <>
       <p>
@@ -85,6 +83,15 @@ export const RemainingDisplay = ({
         <button onClick={() => setDisplayStyle(getNextDisplayStyle())}>
           Toggle time remaining style
         </button>
+        {(displayStyle === "percentage" ||
+          displayStyle === "timePercentage") && (
+          <div style={{ marginTop: 15 }}>
+            Percentage decimal places:{" "}
+            <button onClick={decrementPercentageDecimalPlaces}>-</button>
+            {"/"}
+            <button onClick={incrementPercentageDecimalPlaces}>+</button>
+          </div>
+        )}
       </p>
       <p>
         {finishDate < new Date()
