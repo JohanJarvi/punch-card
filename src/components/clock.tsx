@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { convertSecondsToHoursMinutesSecondsString } from "../utils/TimeConverter";
 import { getSecondsDiff } from "../utils/DateUtils";
 
@@ -22,11 +22,13 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
     };
 
     if (isRunning) {
-      const startDateLocalStorage = getStartDateFromLocalStorage();
-      const timeNow = new Date();
-      const secondsDiff = getSecondsDiff(startDateLocalStorage, timeNow);
+      intervalId = setInterval(() => {
+        const startDateLocalStorage = getStartDateFromLocalStorage();
+        const timeNow = new Date();
+        const secondsDiff = getSecondsDiff(startDateLocalStorage, timeNow);
 
-      intervalId = setInterval(() => setTime(secondsDiff + 1), 1000);
+        setTime(secondsDiff);
+      }, 1000);
     }
 
     return () => clearInterval(intervalId);
@@ -49,19 +51,24 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
     onSave(totalTimeWorked);
   };
 
-  const timeLeftDisplay = useMemo(() => {
-    const timeLeftSeconds = timeInLieuInSeconds - time;
-    const absoluteTimeLeftSeconds = Math.abs(timeInLieuInSeconds - time);
-    if (timeLeftSeconds < 0) {
-      return `Overtime worked: ${convertSecondsToHoursMinutesSecondsString(
-        absoluteTimeLeftSeconds
-      )}`;
-    } else {
-      return `Time left: ${convertSecondsToHoursMinutesSecondsString(
-        absoluteTimeLeftSeconds
-      )}`;
-    }
-  }, [timeInLieuInSeconds, time]);
+  const timeLeftSeconds = timeInLieuInSeconds - time;
+
+  const absoluteTimeLeftSeconds = Math.abs(timeInLieuInSeconds - time);
+  let timeLeftDisplay;
+  if (timeLeftSeconds < 0) {
+    timeLeftDisplay = `${convertSecondsToHoursMinutesSecondsString(
+      absoluteTimeLeftSeconds
+    )} overtime worked today`;
+  } else {
+    timeLeftDisplay = `${convertSecondsToHoursMinutesSecondsString(
+      absoluteTimeLeftSeconds
+    )} (${((absoluteTimeLeftSeconds / (7.6 * 60 * 60)) * 100).toFixed(
+      2
+    )}%) remains today`;
+  }
+
+  const finishDate = new Date();
+  finishDate.setSeconds(finishDate.getSeconds() + timeLeftSeconds);
 
   const toggleTimer = () => {
     if (isRunning) {
@@ -83,7 +90,12 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
 
   return (
     <>
-      <p>{timeLeftDisplay}</p>
+      <h2>{timeLeftDisplay}</h2>
+      <p>
+        {finishDate < new Date()
+          ? `You should have finished working on ${finishDate.toLocaleString()}`
+          : `You should finish working on ${finishDate.toLocaleString()}`}
+      </p>
       <button onClick={() => toggleTimer()}>
         {isRunning ? "Stop" : "Start"}
       </button>
