@@ -32,7 +32,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <div style={{ margin: 30 }}>
       <h1>Punch Card</h1>
       <Clock
         timeInLieuInSeconds={timeInLieu}
@@ -42,6 +42,6 @@ export default function App() {
         workHistories={histories}
         onHistoryUpdate={(timeInLieu) => setTimeInLieu(timeInLieu)}
       ></WorkHistory>
-    </>
+    </div>
   );
 }
