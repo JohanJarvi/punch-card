@@ -9,6 +9,7 @@ interface ClockProps {
 
 export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   const [time, setTime] = useState(0);
+  const [timeSinceSave, setTimeSinceSave] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
@@ -22,11 +23,16 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
     };
 
     if (isRunning) {
+      if (timeSinceSave >= 30) {
+        handleHistorySave();
+      }
+
       intervalId = setInterval(() => {
         const startDateLocalStorage = getStartDateFromLocalStorage();
         const timeNow = new Date();
         const secondsDiff = getSecondsDiff(startDateLocalStorage, timeNow);
 
+        setTimeSinceSave(timeSinceSave + 1);
         setTime(secondsDiff);
       }, 1000);
     }
@@ -85,6 +91,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   const handleHistorySave = () => {
     performSave();
     setTime(0);
+    setTimeSinceSave(0);
     setStartTime();
   };
 
@@ -93,8 +100,8 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
       <h2>{timeLeftDisplay}</h2>
       <p>
         {finishDate < new Date()
-          ? `You should have finished working on ${finishDate.toLocaleString()}`
-          : `You should finish working on ${finishDate.toLocaleString()}`}
+          ? `You should have finished at ${finishDate.toLocaleTimeString()} on ${finishDate.toLocaleDateString()}`
+          : `You should finish at ${finishDate.toLocaleTimeString()} on ${finishDate.toLocaleDateString()}`}
       </p>
       <button onClick={() => toggleTimer()}>
         {isRunning ? "Stop" : "Start"}
