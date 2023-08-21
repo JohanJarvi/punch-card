@@ -83,7 +83,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
       <RemainingDisplay timeLeftSeconds={timeLeftSeconds}></RemainingDisplay>
       <button onClick={() => toggleTimer()}>
         {isRunning ? "Stop" : "Start"}
-      </button>
+      </button>{" "}
       <button onClick={handleHistorySave}>Save in history</button>
     </>
   );
