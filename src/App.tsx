@@ -32,7 +32,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ margin: 30 }}>
+    <div>
       <h1>Punch Card</h1>
       <Clock
         timeInLieuInSeconds={timeInLieu}

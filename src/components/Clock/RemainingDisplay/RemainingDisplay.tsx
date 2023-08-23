@@ -85,7 +85,7 @@ export const RemainingDisplay = ({
         </button>
         {(displayStyle === "percentage" ||
           displayStyle === "timePercentage") && (
-          <div style={{ marginTop: 15 }}>
+          <div>
             Percentage decimal places:{" "}
             <button onClick={decrementPercentageDecimalPlaces}>-</button>
             {"/"}
