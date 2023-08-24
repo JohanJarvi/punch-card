@@ -1,13 +1,18 @@
-import { HistoryWeek } from "../../../types/WorkHistory";
+import { HistoryWeek, Workday } from "../../../types/WorkHistory";
 import { WorkHistoryDay } from "./WorkHistoryDay/WorkHistoryDay";
 
 interface WorkHistoryWeekProps {
   week: HistoryWeek;
+  onDelete: (day: Workday) => void;
 }
 
-export const WorkHistoryWeek = ({ week }: WorkHistoryWeekProps) => {
+export const WorkHistoryWeek = ({ week, onDelete }: WorkHistoryWeekProps) => {
+  const handleDelete = (day: Workday) => {
+    onDelete(day);
+  };
+
   return (
-    <div className="flex flex-col my-2 p-5 bg-slate-200 drop-shadow-lg rounded-lg w-1/3">
+    <div className="flex flex-col my-2 p-5 bg-slate-200 drop-shadow-lg rounded-lg">
       <h2 className="font-bold font-mono mb-4 text-xl self-center">
         Week {week.week}
       </h2>
@@ -16,6 +21,7 @@ export const WorkHistoryWeek = ({ week }: WorkHistoryWeekProps) => {
           <WorkHistoryDay
             key={historyDay.date}
             day={historyDay}
+            onDelete={handleDelete}
           ></WorkHistoryDay>
         );
       })}

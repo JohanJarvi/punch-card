@@ -6,11 +6,13 @@ import { WorkHistoryWeek } from "./WorkHistoryWeek/WorkHistoryWeek";
 interface WorkHistoryProps {
   workHistories: Workday[];
   onHistoryUpdate: (timeInLieu: number) => void;
+  onDelete: (day: Workday) => void;
 }
 
 export const WorkHistory = ({
   workHistories,
   onHistoryUpdate,
+  onDelete,
 }: WorkHistoryProps) => {
   const uniqueWeeks = Array.from(
     new Set(
@@ -49,8 +51,12 @@ export const WorkHistory = ({
     onHistoryUpdate(totalLieuTime);
   }, [historyWeeks, onHistoryUpdate]);
 
+  const handleDelete = (day: Workday) => {
+    onDelete(day);
+  };
+
   return (
-    <>
+    <div className="flex flex-col w-1/3 gap-4">
       {historyWeeks
         .sort((a, b) => (a.week > b.week ? -1 : 1))
         .map((historyWeek) => {
@@ -58,9 +64,10 @@ export const WorkHistory = ({
             <WorkHistoryWeek
               key={historyWeek.week}
               week={historyWeek}
+              onDelete={handleDelete}
             ></WorkHistoryWeek>
           );
         })}
-    </>
+    </div>
   );
 };

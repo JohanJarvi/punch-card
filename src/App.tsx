@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { WorkHistory } from "./components/WorkHistory/WorkHistory";
 import { Clock } from "./components/Clock/clock";
 import { Workday } from "./types/WorkHistory";
@@ -7,9 +7,9 @@ import { isValidDateKey } from "./utils/DateUtils";
 export default function App() {
   const [clockSave, toggleClockSave] = useState(false);
   const [timeInLieu, setTimeInLieu] = useState(7.6 * 60 * 60);
-  const [histories, setHistories] = useState<Workday[]>([]);
+  const [triggerRefresh, setTriggerRefresh] = useState(false);
 
-  useEffect(() => {
+  const histories = useMemo(() => {
     let histories = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i) || "";
@@ -21,14 +21,19 @@ export default function App() {
       const item = Number.parseInt(localStorage.getItem(key) || "");
       histories.push({ date: key, time: item });
     }
-    setHistories(histories);
-  }, [clockSave]);
+    return histories;
+  }, [clockSave, triggerRefresh]);
 
   const handleClockSave = (time: number) => {
     const localeDateString = new Date().toLocaleDateString();
 
     localStorage.setItem(localeDateString, time.toString());
     toggleClockSave(!clockSave);
+  };
+
+  const handleDelete = (day: Workday) => {
+    localStorage.removeItem(day.date);
+    setTriggerRefresh(!triggerRefresh);
   };
 
   return (
@@ -42,6 +47,7 @@ export default function App() {
       <WorkHistory
         workHistories={histories}
         onHistoryUpdate={(timeInLieu) => setTimeInLieu(timeInLieu)}
+        onDelete={handleDelete}
       ></WorkHistory>
     </div>
   );
