@@ -79,12 +79,32 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-4 w-1/3">
+      <div className="flex flex-row items-center justify-around">
+        {!isRunning ? (
+          <button
+            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md h-12 w-48 hover:bg-lime-300"
+            onClick={() => toggleTimer()}
+          >
+            Start
+          </button>
+        ) : (
+          <button
+            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md h-12 w-48 hover:bg-red-300"
+            onClick={() => toggleTimer()}
+          >
+            Stop
+          </button>
+        )}
+
+        <button
+          className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md h-12 w-48 hover:bg-slate-300"
+          onClick={handleHistorySave}
+        >
+          Save
+        </button>
+      </div>
       <RemainingDisplay timeLeftSeconds={timeLeftSeconds}></RemainingDisplay>
-      <button onClick={() => toggleTimer()}>
-        {isRunning ? "Stop" : "Start"}
-      </button>{" "}
-      <button onClick={handleHistorySave}>Save in history</button>
-    </>
+    </div>
   );
 };

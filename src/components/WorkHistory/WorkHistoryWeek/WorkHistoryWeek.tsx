@@ -7,26 +7,18 @@ interface WorkHistoryWeekProps {
 
 export const WorkHistoryWeek = ({ week }: WorkHistoryWeekProps) => {
   return (
-    <>
-      <h2>Week {week.week}</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {week.histories.map((historyDay) => {
-            return (
-              <WorkHistoryDay
-                key={historyDay.date}
-                day={historyDay}
-              ></WorkHistoryDay>
-            );
-          })}
-        </tbody>
-      </table>
-    </>
+    <div className="flex flex-col my-2 p-5 bg-slate-200 drop-shadow-lg rounded-lg w-1/3">
+      <h2 className="font-bold font-mono mb-4 text-xl self-center">
+        Week {week.week}
+      </h2>
+      {week.histories.map((historyDay) => {
+        return (
+          <WorkHistoryDay
+            key={historyDay.date}
+            day={historyDay}
+          ></WorkHistoryDay>
+        );
+      })}
+    </div>
   );
 };

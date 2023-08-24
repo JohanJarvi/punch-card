@@ -32,12 +32,13 @@ export default function App() {
   };
 
   return (
-    <div>
-      <h1>Punch Card</h1>
+    <div className="p-10 h-screen w-screen bg-slate-300 font-sans text-slate-900 flex flex-col items-center">
+      <h1 className="text-4xl text-slate-900 font-serif mb-5">Punch Card</h1>
       <Clock
         timeInLieuInSeconds={timeInLieu}
         onSave={(time: number) => handleClockSave(time)}
       ></Clock>
+      <h2 className="text-3xl text-slate-900 font-serif my-5">Work History</h2>
       <WorkHistory
         workHistories={histories}
         onHistoryUpdate={(timeInLieu) => setTimeInLieu(timeInLieu)}

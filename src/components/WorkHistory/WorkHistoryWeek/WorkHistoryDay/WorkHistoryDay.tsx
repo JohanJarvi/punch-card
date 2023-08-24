@@ -7,15 +7,9 @@ interface WorkHistoryDayProps {
 
 export const WorkHistoryDay = ({ day }: WorkHistoryDayProps) => {
   return (
-    <>
-      <tr>
-        <td>
-          <strong>{day.date}</strong>{" "}
-        </td>
-        <td>
-          <em>{convertSecondsToHoursMinutesSecondsString(day.time)}</em>
-        </td>
-      </tr>
-    </>
+    <div className="flex flex-row justify-around">
+      <strong>{day.date}</strong>
+      <em>{convertSecondsToHoursMinutesSecondsString(day.time)}</em>
+    </div>
   );
 };
