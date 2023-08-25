@@ -7,12 +7,14 @@ interface WorkHistoryProps {
   workHistories: Workday[];
   onHistoryUpdate: (timeInLieu: number) => void;
   onDelete: (day: Workday) => void;
+  onEdit: (day: Workday) => void;
 }
 
 export const WorkHistory = ({
   workHistories,
   onHistoryUpdate,
   onDelete,
+  onEdit,
 }: WorkHistoryProps) => {
   const uniqueWeeks = Array.from(
     new Set(
@@ -55,6 +57,10 @@ export const WorkHistory = ({
     onDelete(day);
   };
 
+  const handleEdit = (day: Workday) => {
+    onEdit(day);
+  };
+
   return (
     <div className="flex flex-col w-1/3 gap-4">
       {historyWeeks
@@ -65,6 +71,7 @@ export const WorkHistory = ({
               key={historyWeek.week}
               week={historyWeek}
               onDelete={handleDelete}
+              onEdit={handleEdit}
             ></WorkHistoryWeek>
           );
         })}

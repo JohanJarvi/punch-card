@@ -4,11 +4,20 @@ import { WorkHistoryDay } from "./WorkHistoryDay/WorkHistoryDay";
 interface WorkHistoryWeekProps {
   week: HistoryWeek;
   onDelete: (day: Workday) => void;
+  onEdit: (day: Workday) => void;
 }
 
-export const WorkHistoryWeek = ({ week, onDelete }: WorkHistoryWeekProps) => {
+export const WorkHistoryWeek = ({
+  week,
+  onDelete,
+  onEdit,
+}: WorkHistoryWeekProps) => {
   const handleDelete = (day: Workday) => {
     onDelete(day);
+  };
+
+  const handleEdit = (day: Workday) => {
+    onEdit(day);
   };
 
   return (
@@ -22,6 +31,7 @@ export const WorkHistoryWeek = ({ week, onDelete }: WorkHistoryWeekProps) => {
             key={historyDay.date}
             day={historyDay}
             onDelete={handleDelete}
+            onEdit={handleEdit}
           ></WorkHistoryDay>
         );
       })}
