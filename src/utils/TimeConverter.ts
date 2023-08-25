@@ -31,3 +31,16 @@ export const convertSecondsToHoursMinutesSecondsString = (
 
   return hoursMinutesSecondsString;
 };
+
+export const convertHoursMinutesSecondsStringToSeconds = (
+  hoursMinutesSecondsString: string 
+): number => {
+  if (!/\d{2}:\d{2}:\d{2}/i.test(hoursMinutesSecondsString)) return NaN;
+  
+  const hours = Number.parseInt(hoursMinutesSecondsString.substring(0,2))
+  const minutes = Number.parseInt(hoursMinutesSecondsString.substring(3,5))
+  const seconds = Number.parseInt(hoursMinutesSecondsString.substring(6,8))
+
+  return hours * 60 * 60 + minutes * 60 + seconds;
+};
+

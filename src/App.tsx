@@ -1,140 +1,84 @@
-import { useEffect, useRef, useState } from "react";
-import "./App.css";
-import { Button } from "./components/Button/Button";
-import { TimerDisplay } from "./components/TimerDisplay/TimerDisplay";
+import { useMemo, useState } from "react";
 import { WorkHistory } from "./components/WorkHistory/WorkHistory";
-import { getSecondsDiff } from "./utils/DateUtils";
+import { Clock } from "./components/Clock/clock";
+import { Workday } from "./types/WorkHistory";
+import { isValidDateKey } from "./utils/DateUtils";
+import { HistoryEditor } from "./components/HistoryEditor/HistoryEditor";
 
 export default function App() {
-  const dateToday = new Date().toLocaleDateString();
-  const [timeWorkedSeconds, setTimeWorkedSeconds] = useState(0);
-  const [totalTimeWorkedSeconds, setTotalTimeWorkedSeconds] = useState(
-    Number.parseInt(localStorage.getItem(`${dateToday}-total`) || "0")
-  );
-  const [timerStartDateTime, setTimerStartDateTime] = useState<Date>();
-  const [timerStopDateTime, setTimerStopDateTime] = useState<Date>();
-  const [timerOn, toggleTimer] = useState(false);
-  const [timeLeftWeekSeconds, setTimeLeftWeekSeconds] = useState(0);
-  // const [] = useRef();
+  const [clockSave, toggleClockSave] = useState(false);
+  const [timeInLieu, setTimeInLieu] = useState(7.6 * 60 * 60);
+  const [triggerRefresh, setTriggerRefresh] = useState(false);
+  const [editing, setEditing] = useState<Workday>();
 
-  const setStartTime = () => {
+  const histories = useMemo(() => {
+    let histories = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i) || "";
+      if (key.includes("-start")) continue;
+      if (key.includes("-current")) continue;
+
+      if (!isValidDateKey(key)) continue;
+
+      const item = Number.parseInt(localStorage.getItem(key) || "");
+      histories.push({ date: key, time: item });
+    }
+    return histories;
+  }, [clockSave, triggerRefresh]);
+
+  const handleClockSave = (time: number) => {
     const localeDateString = new Date().toLocaleDateString();
-    const newStartTime = new Date();
-    localStorage.setItem(`${localeDateString}-start`, new Date().toString());
-    setTimerStartDateTime(newStartTime);
-    incrementWorkTotal(0, localeDateString);
+
+    localStorage.setItem(localeDateString, time.toString());
+    toggleClockSave(!clockSave);
   };
 
-  const setStopTime = () => {
-    const localeDateString = new Date().toLocaleDateString();
-    const newStartTime = new Date();
-    localStorage.setItem(localeDateString, "0");
-    localStorage.setItem(`${localeDateString}-stop`, new Date().toString());
-    setTimerStopDateTime(newStartTime);
+  const handleDelete = (day: Workday) => {
+    localStorage.removeItem(day.date);
+    setTriggerRefresh(!triggerRefresh);
   };
 
-  const incrementWorkTotal = (increment: number, localeDateString: string) => {
-    const totalSoFar = Number.parseInt(
-      localStorage.getItem(`${localeDateString}-total`) || "0"
-    );
-
-    localStorage.setItem(
-      `${localeDateString}-total`,
-      (increment + totalSoFar).toString()
-    );
-
-    setTotalTimeWorkedSeconds(increment + totalSoFar);
+  const handleEdit = (day: Workday) => {
+    setEditing(day);
   };
 
-  useEffect(() => {
-    const date = new Date().toLocaleDateString();
-    const bankedUpSeconds = Number.parseInt(
-      localStorage.getItem(`${date}-safeguard`) || "0"
-    );
+  const handleEditorClose = () => {
+    setEditing(undefined);
+  };
 
-    if (bankedUpSeconds > 0) {
-      incrementWorkTotal(bankedUpSeconds, date);
-      localStorage.setItem(`${date}-safeguard`, "0");
-    }
-
-    return function cleanup() {
-      localStorage.removeItem(date);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (timerOn) {
-      setStartTime();
-    } else {
-      setStopTime();
-    }
-  }, [timerOn]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timer;
-    const date = new Date().toLocaleDateString();
-
-    if (timerOn) {
-      interval = setInterval(() => {
-        const secondsDiff = getSecondsDiff(
-          timerStartDateTime || new Date(),
-          new Date()
-        );
-        setTimeWorkedSeconds(secondsDiff);
-        localStorage.setItem(`${date}-safeguard`, secondsDiff.toString());
-      }, 1000);
-    } else {
-      localStorage.setItem(`${date}-safeguard`, "0");
-      incrementWorkTotal(timeWorkedSeconds, date);
-    }
-
-    return function cleanup() {
-      clearInterval(interval);
-    };
-  }, [timerStartDateTime, timerStopDateTime]);
-
-  useEffect(() => {
-    const date = new Date().toLocaleDateString();
-
-    localStorage.setItem(date, timeWorkedSeconds.toString());
-  }, [timeWorkedSeconds]);
-
-  const handleTimerToggle = () => toggleTimer(!timerOn);
-
-  const handleSave = () => toggleTimer(true);
-  const handleEdit = () => toggleTimer(false);
-
-  const handleUpdate = (input: number) => {
-    setTimeLeftWeekSeconds(input);
+  const handleSave = (updatedWorkday: Workday) => {
+    localStorage.setItem(updatedWorkday.date, updatedWorkday.time.toString());
+    setTriggerRefresh(!triggerRefresh);
+    handleEditorClose();
   };
 
   return (
-    <div className="container">
-      <h1>{new Date().toLocaleDateString()}</h1>
-      <Button
-        active={timerOn}
-        onClick={handleTimerToggle}
-        label={timerOn ? "Stop working" : "Begin working"}
-      />
-      <TimerDisplay
-        seconds={timeLeftWeekSeconds}
-        message="Time left:"
-        timeLeftPercentage={{
-          showTimeLeftPercentage: true,
-          setPointInSeconds: 7.6 * 60 * 60,
-        }}
-      />
-      <div>
-        <h2 style={{ display: "inline-block", marginRight: 10 }}>
-          Work Totals
-        </h2>
+    <div className="p-10 min-h-screen w-screen bg-slate-300 font-sans text-slate-900">
+      <div className={`flex flex-col items-center ${editing && "blur"}`}>
+        <h1 className="text-4xl text-slate-900 font-serif mb-5">Punch Card</h1>
+        <Clock
+          timeInLieuInSeconds={timeInLieu}
+          onSave={(time: number) => handleClockSave(time)}
+        ></Clock>
+        {histories.length > 0 && (
+          <h2 className="text-3xl text-slate-900 font-serif my-5">
+            Work History
+          </h2>
+        )}
+        <WorkHistory
+          workHistories={histories}
+          onHistoryUpdate={(timeInLieu) => setTimeInLieu(timeInLieu)}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+        ></WorkHistory>
       </div>
-      <WorkHistory
-        totalTimeWorkedSeconds={totalTimeWorkedSeconds}
-        onSave={handleSave}
-        onEdit={handleEdit}
-        onUpdate={handleUpdate}
-      />
+      {editing && (
+        <HistoryEditor
+          workDayToEdit={editing}
+          onClose={handleEditorClose}
+          onSave={handleSave}
+        ></HistoryEditor>
+      )}
     </div>
   );
 }

@@ -1,352 +1,80 @@
-import { useEffect, useState } from "react";
-import {
-  getTimeLeftInSecondsOfWorkWeek,
-  getValidDateObjectFromLocalDateString,
-  getWeekNumberOfYearFromDateKey,
-  getYearFromLocaleDateString,
-} from "../../utils/DateUtils";
-import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
-import FileSaver from "file-saver";
-import "./WorkHistory.css";
-import { Button } from "../Button/Button";
-import { Editor } from "./Editor/Editor";
-import { FaEdit, FaFileExport, FaPenSquare, FaTimes } from "react-icons/fa";
-
-export type WorkHistoryDisplay = {
-  date: string;
-  workedTimeInSeconds: number;
-  weekNumber: number;
-  year: number;
-};
+import { useEffect } from "react";
+import { HistoryWeek, Workday } from "../../types/WorkHistory";
+import { getWeekNumberOfYearFromDateKey } from "../../utils/DateUtils";
+import { WorkHistoryWeek } from "./WorkHistoryWeek/WorkHistoryWeek";
 
 interface WorkHistoryProps {
-  totalTimeWorkedSeconds: number;
-  onSave: () => void;
-  onEdit: () => void;
-  onUpdate: (timeRemainingToReachDaysWorkedSoFarTotal: number) => void;
+  workHistories: Workday[];
+  onHistoryUpdate: (timeInLieu: number) => void;
+  onDelete: (day: Workday) => void;
+  onEdit: (day: Workday) => void;
 }
 
-interface WorkHistoryWeek {
-  week: number;
-  histories: WorkHistoryDisplay[];
-  totalTimeWorkedInSeconds: number;
-  year: number;
-  timeRemainingPerDailyAverageInSeconds: number;
-}
+export const WorkHistory = ({
+  workHistories,
+  onHistoryUpdate,
+  onDelete,
+  onEdit,
+}: WorkHistoryProps) => {
+  const uniqueWeeks = Array.from(
+    new Set(
+      workHistories.map((history) =>
+        getWeekNumberOfYearFromDateKey(history.date)
+      )
+    )
+  );
 
-export interface ScreenCoordinates {
-  x: number;
-  y: number;
-}
+  const calculateTimeLeftInWeek = (weeklyHistories: Workday[]): number => {
+    const lieuTimeWeek = weeklyHistories
+      .map((history) => 7.6 * 60 * 60 - history.time)
+      .reduce((a, b) => a + b);
 
-export const WorkHistory = (props: WorkHistoryProps) => {
-  const [workHistories, setWorkHistories] = useState<WorkHistoryWeek[]>([]);
-  const [showEdit, setShowEdit] = useState(false);
-  const [workHistoryToEdit, setWorkHistoryToEdit] =
-    useState<WorkHistoryDisplay>();
-  const [clickCoordinates, setClickCoordinates] = useState<ScreenCoordinates>();
+    return lieuTimeWeek;
+  };
+
+  const historyWeeks: HistoryWeek[] = uniqueWeeks.map((week) => {
+    const weeklyHistories = workHistories.filter(
+      (workHistory) => getWeekNumberOfYearFromDateKey(workHistory.date) === week
+    );
+    return {
+      week,
+      histories: weeklyHistories.sort((a, b) => (a.date > b.date ? -1 : 1)),
+      lieuTime: calculateTimeLeftInWeek(weeklyHistories),
+    };
+  });
 
   useEffect(() => {
-    const histories: WorkHistoryDisplay[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i) || "";
-      if (key.includes("-total")) {
-        const item = Number.parseInt(localStorage.getItem(key) || "");
+    if (historyWeeks.length === 0) return;
 
-        const sanitisedKey = key.replace("-total", "");
+    const totalLieuTime = historyWeeks
+      .map((historyWeek) => historyWeek.lieuTime)
+      .reduce((a, b) => a + b);
 
-        histories.push({
-          date: sanitisedKey,
-          workedTimeInSeconds: item,
-          weekNumber: getWeekNumberOfYearFromDateKey(sanitisedKey),
-          year: getYearFromLocaleDateString(sanitisedKey),
-        });
-      }
-    }
+    onHistoryUpdate(totalLieuTime);
+  }, [historyWeeks, onHistoryUpdate]);
 
-    histories.sort((a, b) => (a.date > b.date ? -1 : 1));
-
-    const uniqueWeeks = Array.from(
-      new Set(histories.map((history) => history.weekNumber))
-    );
-
-    const workHistoryWeeks: WorkHistoryWeek[] = uniqueWeeks.map((week) => {
-      const filteredHistories = histories
-        .filter((history) => history.weekNumber === week)
-        .sort(
-          (a, b) =>
-            getValidDateObjectFromLocalDateString(b.date).getTime() -
-            getValidDateObjectFromLocalDateString(a.date).getTime()
-        );
-
-      const totalTimeWorkedInSeconds = filteredHistories
-        .map((history) => history.workedTimeInSeconds)
-        .reduce((a, b) => a + b);
-
-      const timeRemainingPerDailyAverageInSeconds =
-        filteredHistories.length * 7.6 * 60 * 60 - totalTimeWorkedInSeconds;
-
-      return {
-        week,
-        histories: filteredHistories,
-        totalTimeWorkedInSeconds: totalTimeWorkedInSeconds,
-        year: filteredHistories[0].year,
-        timeRemainingPerDailyAverageInSeconds,
-      };
-    });
-
-    workHistoryWeeks
-      .sort((a, b) => b.week - a.week)
-      .sort((a, b) => (b.year || 0) - (a.year || 0));
-
-    const additionalTimeWorked = Number.parseInt(
-      localStorage.getItem(`${new Date().toLocaleDateString()}-safeguard`) ||
-        "0"
-    );
-
-    const timeInLieu = calculateTotalTimeInLieu(workHistoryWeeks);
-    const additionalTimeWorkedWithTimeInLieu =
-      additionalTimeWorked - timeInLieu;
-
-    workHistoryWeeks[0].histories[0].workedTimeInSeconds +=
-      additionalTimeWorked;
-    workHistoryWeeks[0].totalTimeWorkedInSeconds += additionalTimeWorked;
-    props.onUpdate(
-      workHistoryWeeks[0].timeRemainingPerDailyAverageInSeconds -
-        additionalTimeWorkedWithTimeInLieu
-    );
-    setWorkHistories(workHistoryWeeks);
-  }, [props]);
-
-  const handleEdit = (event: any, workHistoryToEdit: WorkHistoryDisplay) => {
-    setShowEdit(true);
-    setWorkHistoryToEdit(workHistoryToEdit);
-    setClickCoordinates({ x: event.pageX + 100, y: event.pageY });
-    if (workHistoryToEdit.date.includes(new Date().toLocaleDateString())) {
-      props.onEdit();
-    }
+  const handleDelete = (day: Workday) => {
+    onDelete(day);
   };
 
-  const handleClosed = (closed: boolean) => {
-    setShowEdit(!closed);
-    props.onSave();
-  };
-
-  const handleEditedWorkHistory = (editedWorkHistory: WorkHistoryDisplay) => {
-    localStorage.setItem(
-      editedWorkHistory.date,
-      editedWorkHistory.workedTimeInSeconds.toString()
-    );
-  };
-
-  const handleDelete = (event: any, key: string) => {
-    localStorage.removeItem(`${key}-total`);
-
-    const newHistories = workHistories
-      .map((workHistoryWeek) => ({
-        week: workHistoryWeek.week,
-        histories: workHistoryWeek.histories.filter(
-          (history) => !history.date.includes(key)
-        ),
-        totalTimeWorkedInSeconds: workHistoryWeek.totalTimeWorkedInSeconds,
-        year: workHistoryWeek.year,
-        timeRemainingPerDailyAverageInSeconds:
-          workHistoryWeek.timeRemainingPerDailyAverageInSeconds,
-      }))
-      .filter((workHistoryWeek) => workHistoryWeek.histories.length > 0);
-
-    setWorkHistories(newHistories);
-  };
-
-  const handleExport = (event: any, week: WorkHistoryWeek) => {
-    const blobHeadings = "Date,Time Worked,Time Worked (sec),Hours Worked\n";
-
-    const lines = week.histories.map(
-      (history) =>
-        `${history.date},${convertSecondsToHoursMinutesSecondsString(
-          history.workedTimeInSeconds
-        )},${history.workedTimeInSeconds},${
-          history.workedTimeInSeconds / 60 / 60
-        }\n`
-    );
-
-    FileSaver.saveAs(
-      new Blob([blobHeadings, ...lines], {
-        type: "text/csv;charset=utf-8",
-      }),
-      `${week.year}-Week_${week.week}-${new Date().toLocaleDateString()}.csv`
-    );
-  };
-
-  const handleExportAll = (event: any) => {
-    const blobHeadings =
-      "Year,Week#,Date,Time Worked,Time Worked (sec),Hours Worked\n";
-
-    const lines = workHistories.flatMap((workHistoryWeek) =>
-      workHistoryWeek.histories.map(
-        (history) =>
-          `${history.year},${history.weekNumber},${
-            history.date
-          },${convertSecondsToHoursMinutesSecondsString(
-            history.workedTimeInSeconds
-          )},${history.workedTimeInSeconds},${
-            history.workedTimeInSeconds / 60 / 60
-          }\n`
-      )
-    );
-
-    FileSaver.saveAs(
-      new Blob([blobHeadings, ...lines], {
-        type: "text/csv;charset=utf-8",
-      }),
-      `all_work_history-${new Date().toLocaleDateString()}.csv`
-    );
-  };
-
-  const calculateTotalTimeInLieu = (
-    workHistoryWeeks: WorkHistoryWeek[]
-  ): number => {
-    const currentWeek = getWeekNumberOfYearFromDateKey(
-      new Date().toLocaleDateString()
-    );
-
-    return Math.round(
-      workHistoryWeeks
-        .filter((workHistoryWeek) => workHistoryWeek.week !== currentWeek)
-        .map(
-          (workHistoryWeek) =>
-            workHistoryWeek.timeRemainingPerDailyAverageInSeconds
-        )
-        .reduce((a, b) => a + b)
-    );
+  const handleEdit = (day: Workday) => {
+    onEdit(day);
   };
 
   return (
-    <div>
-      <div>
-        {workHistoryToEdit ? (
-          <Editor
-            editing={showEdit}
-            workHistoryToEdit={workHistoryToEdit}
-            positionCoordinates={clickCoordinates}
-            handleEditedWorkHistory={handleEditedWorkHistory}
-            handleClose={handleClosed}
-            handleSave={props.onSave}
-          />
-        ) : null}
-      </div>
-      <div onClick={handleExportAll} className="clickable-text">
-        Export all <FaFileExport />
-      </div>
-      {workHistories.map((workHistory) => {
-        return (
-          <div key={workHistory.week}>
-            <h3>
-              Week {workHistory.week} (
-              {workHistory.histories[0].date.substring(6, 10)}){" "}
-              <FaFileExport
-                className="icon"
-                onClick={(event) => handleExport(event, workHistory)}
-              />
-            </h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Time Worked</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {workHistory.histories.map((history) => (
-                  <tr key={history.date}>
-                    <td>{history.date}</td>
-                    <td>
-                      {convertSecondsToHoursMinutesSecondsString(
-                        history.workedTimeInSeconds
-                      )}
-                    </td>
-                    <td>
-                      <FaEdit
-                        className="icon"
-                        onClick={(event) => handleEdit(event, history)}
-                      />
-                    </td>
-                    <td>
-                      <FaTimes
-                        className="icon"
-                        onClick={(event) => handleDelete(event, history.date)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-                <tr>
-                  <td style={{ borderTop: "1px solid #C3CDDF" }}>Week total</td>
-                  <td style={{ borderTop: "1px solid #C3CDDF" }} colSpan={3}>
-                    <strong
-                      style={{
-                        color:
-                          workHistory.totalTimeWorkedInSeconds >
-                          Math.round(
-                            workHistory.histories.length * 7.6 * 60 * 60 + 300
-                          )
-                            ? "#932A2B"
-                            : "",
-                      }}
-                    >
-                      {convertSecondsToHoursMinutesSecondsString(
-                        workHistory.totalTimeWorkedInSeconds
-                      )}
-                    </strong>{" "}
-                    /{" "}
-                    <em>
-                      {convertSecondsToHoursMinutesSecondsString(
-                        Math.round(workHistory.histories.length * 7.6 * 60 * 60)
-                      )}{" "}
-                      (
-                      {convertSecondsToHoursMinutesSecondsString(
-                        workHistory.totalTimeWorkedInSeconds -
-                          Math.round(
-                            workHistory.histories.length * 7.6 * 60 * 60
-                          )
-                      )}
-                      )
-                    </em>
-                  </td>
-                </tr>
-                {getTimeLeftInSecondsOfWorkWeek(
-                  workHistory.totalTimeWorkedInSeconds
-                ) > 0 ? (
-                  <tr>
-                    <td>Time left</td>
-                    <td colSpan={3}>
-                      <strong>
-                        {convertSecondsToHoursMinutesSecondsString(
-                          getTimeLeftInSecondsOfWorkWeek(
-                            workHistory.totalTimeWorkedInSeconds
-                          )
-                        )}
-                      </strong>{" "}
-                      /{" "}
-                      <em>
-                        {(
-                          (getTimeLeftInSecondsOfWorkWeek(
-                            workHistory.totalTimeWorkedInSeconds
-                          ) /
-                            (38 * 60 * 60)) *
-                          100
-                        ).toFixed(4)}
-                        % remaining
-                      </em>
-                    </td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
-          </div>
-        );
-      })}
+    <div className="flex flex-col gap-4 w-full md:w-3/4 2xl:w-1/2 mb-10">
+      {historyWeeks
+        .sort((a, b) => (a.week > b.week ? -1 : 1))
+        .map((historyWeek) => {
+          return (
+            <WorkHistoryWeek
+              key={historyWeek.week}
+              week={historyWeek}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            ></WorkHistoryWeek>
+          );
+        })}
     </div>
   );
 };
