@@ -43,18 +43,18 @@ export const RemainingDisplay = ({
     switch (displayStyle) {
       case "time":
         return timeLeftSeconds < 0
-          ? `${absoluteTimeLeftSecondsDisplay} overtime worked today`
+          ? `${absoluteTimeLeftSecondsDisplay} overtime today`
           : `${absoluteTimeLeftSecondsDisplay} remains today`;
 
       case "timePercentage":
         return timeLeftSeconds < 0
-          ? `${absoluteTimeLeftSecondsDisplay} (${percentageLeft}%) overtime worked today`
+          ? `${absoluteTimeLeftSecondsDisplay} (${percentageLeft}%) overtime today`
           : `${absoluteTimeLeftSecondsDisplay} (${percentageLeft}%) remains today`;
 
       case "percentage":
       default:
         return timeLeftSeconds < 0
-          ? `${percentageLeft}% overtime worked today`
+          ? `${percentageLeft}% overtime today`
           : `${percentageLeft}% remains today`;
     }
   };
@@ -169,7 +169,7 @@ export const RemainingDisplay = ({
           <h2 className="flex justify-center font-bold font-mono my-5 text-xl">
             Configuration
           </h2>
-          <div className="flex flex-row items-center my-2 justify-around">
+          <div className="flex flex-col items-center my-2 justify-around gap-4 md:flex-row">
             <div className="flex flex-col items-center gap-2 w-fit md:w-64">
               <span className="md:text-lg">
                 {getStylisedCurrentStyle(displayStyle)}

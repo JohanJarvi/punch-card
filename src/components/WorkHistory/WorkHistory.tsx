@@ -62,7 +62,7 @@ export const WorkHistory = ({
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full md:w-3/4 2xl:w-1/2">
+    <div className="flex flex-col gap-4 w-full md:w-3/4 2xl:w-1/2 mb-10">
       {historyWeeks
         .sort((a, b) => (a.week > b.week ? -1 : 1))
         .map((historyWeek) => {

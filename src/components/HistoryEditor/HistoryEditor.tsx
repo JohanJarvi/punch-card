@@ -34,7 +34,7 @@ export const HistoryEditor = ({
   };
 
   return (
-    <div className="absolute top-1/3 inset-x-1/2 w-1/6 h-1/6 bg-slate-200 drop-shadow-md rounded-lg z-10 flex flex-col items-center justify-around">
+    <div className="absolute bg-slate-200 drop-shadow-md rounded-lg z-10 flex flex-col items-center justify-around inset-x-0 bottom-0 md:inset-1/3 xl:top-1/3 xl:inset-x-1/2 xl:w-1/6 xl:h-1/6">
       <span className="flex mt-2 text-lg font-bold">{workDayToEdit.date}</span>
       <div className="flex flex-col">
         <span className="flex w-48 justify-center">Current</span>
@@ -68,7 +68,7 @@ export const HistoryEditor = ({
             )}
             <button
               type="submit"
-              className="bg-slate-400 rounded-full px-5 drop-shadow-lg h-8 w-18 hover:bg-slate-300 mb-6"
+              className="bg-slate-400 rounded-full px-5 drop-shadow-lg h-8 w-18 hover:bg-slate-300 mb-10"
             >
               Save
             </button>
