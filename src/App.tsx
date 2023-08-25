@@ -53,16 +53,18 @@ export default function App() {
   };
 
   return (
-    <div className="p-10 h-fit w-screen bg-slate-300 font-sans text-slate-900">
+    <div className="p-10 min-h-screen w-screen bg-slate-300 font-sans text-slate-900">
       <div className={`flex flex-col items-center ${editing && "blur"}`}>
         <h1 className="text-4xl text-slate-900 font-serif mb-5">Punch Card</h1>
         <Clock
           timeInLieuInSeconds={timeInLieu}
           onSave={(time: number) => handleClockSave(time)}
         ></Clock>
-        <h2 className="text-3xl text-slate-900 font-serif my-5">
-          Work History
-        </h2>
+        {histories.length > 0 && (
+          <h2 className="text-3xl text-slate-900 font-serif my-5">
+            Work History
+          </h2>
+        )}
         <WorkHistory
           workHistories={histories}
           onHistoryUpdate={(timeInLieu) => setTimeInLieu(timeInLieu)}
