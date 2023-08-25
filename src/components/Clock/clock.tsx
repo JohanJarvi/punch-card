@@ -79,18 +79,18 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-1/3">
+    <div className="flex flex-col gap-4 w-full md:w-3/4 2xl:w-1/2">
       <div className="flex flex-row items-center justify-around">
         {!isRunning ? (
           <button
-            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md h-12 w-48 hover:bg-lime-300"
+            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md hover:bg-lime-300 h-12 w-36 md:w-48"
             onClick={() => toggleTimer()}
           >
             Start
           </button>
         ) : (
           <button
-            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md h-12 w-48 hover:bg-red-300"
+            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md hover:bg-red-300 h-12 w-36 md:w-48"
             onClick={() => toggleTimer()}
           >
             Stop
@@ -98,7 +98,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
         )}
 
         <button
-          className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md h-12 w-48 hover:bg-slate-300"
+          className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md hover:bg-slate-300 h-12 w-36 md:w-48"
           onClick={handleHistorySave}
         >
           Save

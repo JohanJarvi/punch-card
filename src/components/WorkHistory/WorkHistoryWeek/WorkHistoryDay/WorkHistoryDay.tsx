@@ -19,7 +19,7 @@ export const WorkHistoryDay = ({
   );
 
   return (
-    <div className="flex flex-row font-mono mb-2 justify-between">
+    <div className="flex flex-row font-mono mb-2 justify-between text-sm md:text-base lg:text-lg">
       <span className={`${isToday && "font-bold"} flex justify-center w-40`}>
         {day.date}
       </span>
