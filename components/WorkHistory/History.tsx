@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { HistoryWeek, Workday } from "../../types/WorkHistory";
 import { getWeekNumberOfYearFromDateKey } from "../../utils/DateUtils";
-import { WorkHistoryWeek } from "./WorkHistoryWeek/WorkHistoryWeek";
+import { WorkHistoryWeek } from "./HistoryWeek";
+import { HistoryWeek, Workday } from "@/models/WorkHistory";
 
 interface WorkHistoryProps {
   workHistories: Workday[];

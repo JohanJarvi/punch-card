@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RemainingDisplay } from "./RemainingDisplay/RemainingDisplay";
+import { RemainingDisplay } from "./RemainingDisplay";
 import { getSecondsDiff } from "../../utils/DateUtils";
 
 interface ClockProps {
@@ -8,17 +8,22 @@ interface ClockProps {
 }
 
 export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
+  const localStorage =
+    typeof window !== "undefined" ? window.localStorage : undefined;
+
   const [time, setTime] = useState(0);
   const [timeSinceSave, setTimeSinceSave] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+  const [isRunning, setIsRunning] = useState(
+    localStorage && localStorage.getItem("isRunning") === "true"
+  );
 
   useEffect(() => {
-    let intervalId: NodeJS.Timer;
+    let intervalId: NodeJS.Timeout;
 
     const getStartDateFromLocalStorage = (): Date => {
-      const utcString = localStorage.getItem(
-        `${new Date().toLocaleDateString()}-start`
-      );
+      const utcString =
+        localStorage &&
+        localStorage.getItem(`${new Date().toLocaleDateString()}-start`);
       return utcString ? new Date(utcString) : new Date();
     };
 
@@ -41,15 +46,17 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   }, [time, isRunning]);
 
   const setStartTime = () => {
-    localStorage.setItem(
-      `${new Date().toLocaleDateString()}-start`,
-      new Date().toISOString()
-    );
+    localStorage &&
+      localStorage.setItem(
+        `${new Date().toLocaleDateString()}-start`,
+        new Date().toISOString()
+      );
   };
 
   const performSave = () => {
     const currentTimeWorked = Number(
-      localStorage.getItem(new Date().toLocaleDateString()) || ""
+      (localStorage && localStorage.getItem(new Date().toLocaleDateString())) ||
+        ""
     );
 
     const totalTimeWorked = currentTimeWorked + time;
@@ -62,10 +69,12 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   const toggleTimer = () => {
     if (isRunning) {
       performSave();
+      localStorage && localStorage.setItem("isRunning", "false");
       setIsRunning(false);
       setTime(0);
     } else {
       performSave();
+      localStorage && localStorage.setItem("isRunning", "true");
       setIsRunning(true);
       setStartTime();
     }
@@ -83,14 +92,14 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
       <div className="flex flex-row items-center justify-around">
         {!isRunning ? (
           <button
-            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md hover:bg-lime-300 h-12 w-36 md:w-48"
+            className="text-xl bg-lime-300 rounded-full px-5 drop-shadow-md hover:bg-lime-200 h-12 w-36 md:w-48"
             onClick={() => toggleTimer()}
           >
             Start
           </button>
         ) : (
           <button
-            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md hover:bg-red-300 h-12 w-36 md:w-48"
+            className="text-xl bg-red-300 rounded-full px-5 drop-shadow-md hover:bg-red-200 h-12 w-36 md:w-48"
             onClick={() => toggleTimer()}
           >
             Stop

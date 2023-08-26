@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Workday } from "../../types/WorkHistory";
 import {
   convertHoursMinutesSecondsStringToSeconds,
   convertSecondsToHoursMinutesSecondsString,
 } from "../../utils/TimeConverter";
+import { Workday } from "@/models/WorkHistory";
 
 interface HistoryEditorProps {
   workDayToEdit: Workday;

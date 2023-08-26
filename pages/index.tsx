@@ -1,18 +1,24 @@
 import { useMemo, useState } from "react";
-import { WorkHistory } from "./components/WorkHistory/WorkHistory";
-import { Clock } from "./components/Clock/clock";
-import { Workday } from "./types/WorkHistory";
-import { isValidDateKey } from "./utils/DateUtils";
-import { HistoryEditor } from "./components/HistoryEditor/HistoryEditor";
+import { WorkHistory } from "../components/WorkHistory/History";
+import { Clock } from "../components/Timer/Clock";
+import { isValidDateKey } from "../utils/DateUtils";
+import { HistoryEditor } from "../components/HistoryEditor/HistoryEditor";
+import { Workday } from "@/models/WorkHistory";
 
-export default function App() {
+export default function Home() {
   const [clockSave, toggleClockSave] = useState(false);
   const [timeInLieu, setTimeInLieu] = useState(7.6 * 60 * 60);
   const [triggerRefresh, setTriggerRefresh] = useState(false);
   const [editing, setEditing] = useState<Workday>();
 
+  const localStorage =
+    typeof window !== "undefined" ? window.localStorage : undefined;
+
   const histories = useMemo(() => {
     let histories = [];
+
+    if (!localStorage) return [];
+
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i) || "";
       if (key.includes("-start")) continue;
@@ -29,12 +35,12 @@ export default function App() {
   const handleClockSave = (time: number) => {
     const localeDateString = new Date().toLocaleDateString();
 
-    localStorage.setItem(localeDateString, time.toString());
+    localStorage && localStorage.setItem(localeDateString, time.toString());
     toggleClockSave(!clockSave);
   };
 
   const handleDelete = (day: Workday) => {
-    localStorage.removeItem(day.date);
+    localStorage && localStorage.removeItem(day.date);
     setTriggerRefresh(!triggerRefresh);
   };
 
@@ -47,7 +53,8 @@ export default function App() {
   };
 
   const handleSave = (updatedWorkday: Workday) => {
-    localStorage.setItem(updatedWorkday.date, updatedWorkday.time.toString());
+    localStorage &&
+      localStorage.setItem(updatedWorkday.date, updatedWorkday.time.toString());
     setTriggerRefresh(!triggerRefresh);
     handleEditorClose();
   };

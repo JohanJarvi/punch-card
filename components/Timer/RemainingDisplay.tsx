@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { convertSecondsToHoursMinutesSecondsString } from "../../../utils/TimeConverter";
+import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
 
 interface RemainingDisplayProps {
   timeLeftSeconds: number;
