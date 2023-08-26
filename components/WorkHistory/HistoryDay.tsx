@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Workday } from "../../../../types/WorkHistory";
-import { convertSecondsToHoursMinutesSecondsString } from "../../../../utils/TimeConverter";
+import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
+import { Workday } from "@/models/WorkHistory";
 
 interface WorkHistoryDayProps {
   day: Workday;

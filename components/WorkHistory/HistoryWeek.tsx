@@ -1,5 +1,5 @@
-import { HistoryWeek, Workday } from "../../../types/WorkHistory";
-import { WorkHistoryDay } from "./WorkHistoryDay/WorkHistoryDay";
+import { HistoryWeek, Workday } from "../../models/WorkHistory";
+import { WorkHistoryDay } from "./HistoryDay";
 
 interface WorkHistoryWeekProps {
   week: HistoryWeek;
