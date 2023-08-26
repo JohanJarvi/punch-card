@@ -87,14 +87,14 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
       <div className="flex flex-row items-center justify-around">
         {!isRunning ? (
           <button
-            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md hover:bg-lime-300 h-12 w-36 md:w-48"
+            className="text-xl bg-lime-300 rounded-full px-5 drop-shadow-md hover:bg-lime-200 h-12 w-36 md:w-48"
             onClick={() => toggleTimer()}
           >
             Start
           </button>
         ) : (
           <button
-            className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md hover:bg-red-300 h-12 w-36 md:w-48"
+            className="text-xl bg-red-300 rounded-full px-5 drop-shadow-md hover:bg-red-200 h-12 w-36 md:w-48"
             onClick={() => toggleTimer()}
           >
             Stop
