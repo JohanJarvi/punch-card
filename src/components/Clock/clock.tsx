@@ -11,7 +11,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   const [time, setTime] = useState(0);
   const [timeSinceSave, setTimeSinceSave] = useState(0);
   const [isRunning, setIsRunning] = useState(
-    Boolean(localStorage.getItem("isRunning")) || false
+    localStorage.getItem("isRunning") === "true"
   );
 
   useEffect(() => {
