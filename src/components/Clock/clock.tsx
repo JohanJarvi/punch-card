@@ -10,7 +10,9 @@ interface ClockProps {
 export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   const [time, setTime] = useState(0);
   const [timeSinceSave, setTimeSinceSave] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+  const [isRunning, setIsRunning] = useState(
+    Boolean(localStorage.getItem("isRunning")) || false
+  );
 
   useEffect(() => {
     let intervalId: NodeJS.Timer;
@@ -62,10 +64,12 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   const toggleTimer = () => {
     if (isRunning) {
       performSave();
+      localStorage.setItem("isRunning", "false");
       setIsRunning(false);
       setTime(0);
     } else {
       performSave();
+      localStorage.setItem("isRunning", "true");
       setIsRunning(true);
       setStartTime();
     }
