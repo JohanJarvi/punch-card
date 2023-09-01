@@ -25,16 +25,18 @@ export const WorkHistoryWeek = ({
       <h2 className="font-bold font-mono mb-4 text-xl self-center">
         Week {week.week}
       </h2>
-      {week.histories.map((historyDay) => {
-        return (
-          <WorkHistoryDay
-            key={historyDay.date}
-            day={historyDay}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-          ></WorkHistoryDay>
-        );
-      })}
+      {week.histories
+        .sort((a, b) => (a.date > b.date ? 1 : -1))
+        .map((historyDay) => {
+          return (
+            <WorkHistoryDay
+              key={historyDay.date}
+              day={historyDay}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            ></WorkHistoryDay>
+          );
+        })}
     </div>
   );
 };
