@@ -1,3 +1,4 @@
+import { getValidDateObjectFromLocalDateString } from "@/utils/DateUtils";
 import { HistoryWeek, Workday } from "../../models/WorkHistory";
 import { WorkHistoryDay } from "./HistoryDay";
 
@@ -26,7 +27,12 @@ export const WorkHistoryWeek = ({
         Week {week.week}
       </h2>
       {week.histories
-        .sort((a, b) => (a.date > b.date ? 1 : -1))
+        .sort((a, b) =>
+          getValidDateObjectFromLocalDateString(a.date) >
+          getValidDateObjectFromLocalDateString(b.date)
+            ? -1
+            : 1
+        )
         .map((historyDay) => {
           return (
             <WorkHistoryDay
