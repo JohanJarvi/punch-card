@@ -96,7 +96,7 @@ export const WorkHistory = ({
             key={historyYear.year}
             className="flex flex-col my-2 p-5 bg-slate-200 drop-shadow-lg rounded-lg gap-4"
           >
-            <div className="flex text-3xl font-mono">{historyYear.year}</div>
+            <div className="flex text-2xl font-mono">{historyYear.year}</div>
             {historyYear.histories
               .sort((a, b) => (a.week > b.week ? -1 : 1))
               .map((historyWeek) => {
