@@ -28,7 +28,7 @@ export const WorkHistoryDay = ({
       </span>
       <div className="flex flex-row justify-center w-40">
         <button
-          className="bg-slate-200 rounded-full w-8 hover:bg-slate-300 flex justify-center items-center"
+          className="bg-slate-100 rounded-full w-8 hover:bg-slate-200 flex justify-center items-center"
           title={`Edit ${day.date}`}
           onClick={() => onEdit(day)}
         >
@@ -48,7 +48,7 @@ export const WorkHistoryDay = ({
           </svg>
         </button>
         <button
-          className="bg-slate-200 rounded-full w-8 hover:bg-slate-300 flex items-center justify-center"
+          className="bg-slate-100 rounded-full w-8 hover:bg-slate-200 flex items-center justify-center"
           title={`Delete ${day.date}`}
           onClick={() => onDelete(day)}
         >

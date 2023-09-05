@@ -1,7 +1,11 @@
 import { useEffect } from "react";
-import { getWeekNumberOfYearFromDateKey } from "../../utils/DateUtils";
+import {
+  getValidDateObjectFromLocalDateString,
+  getWeekNumberOfYearFromDateKey,
+  getYearFromLocaleDateString,
+} from "../../utils/DateUtils";
 import { WorkHistoryWeek } from "./HistoryWeek";
-import { HistoryWeek, Workday } from "@/models/WorkHistory";
+import { HistoryYear, Workday } from "@/models/WorkHistory";
 
 interface WorkHistoryProps {
   workHistories: Workday[];
@@ -16,13 +20,11 @@ export const WorkHistory = ({
   onDelete,
   onEdit,
 }: WorkHistoryProps) => {
-  const uniqueWeeks = Array.from(
+  const uniqueYears = Array.from(
     new Set(
-      workHistories.map((history) =>
-        getWeekNumberOfYearFromDateKey(history.date)
-      )
+      workHistories.map((history) => getYearFromLocaleDateString(history.date))
     )
-  );
+  ).sort((a, b) => (a > b ? -1 : 1));
 
   const calculateTimeLeftInWeek = (weeklyHistories: Workday[]): number => {
     const lieuTimeWeek = weeklyHistories
@@ -32,26 +34,51 @@ export const WorkHistory = ({
     return lieuTimeWeek;
   };
 
-  const historyWeeks: HistoryWeek[] = uniqueWeeks.map((week) => {
-    const weeklyHistories = workHistories.filter(
-      (workHistory) => getWeekNumberOfYearFromDateKey(workHistory.date) === week
+  const historyYears: HistoryYear[] = uniqueYears.map((year) => {
+    const yearlyHistories = workHistories.filter(
+      (workHistory) => getYearFromLocaleDateString(workHistory.date) === year
     );
+
+    const uniqueYearlyWeeks = Array.from(
+      new Set(
+        yearlyHistories.map((history) =>
+          getWeekNumberOfYearFromDateKey(history.date)
+        )
+      )
+    );
+
     return {
-      week,
-      histories: weeklyHistories.sort((a, b) => (a.date > b.date ? -1 : 1)),
-      lieuTime: calculateTimeLeftInWeek(weeklyHistories),
+      year,
+      histories: uniqueYearlyWeeks.map((week) => {
+        const weeklyHistories = yearlyHistories.filter(
+          (workHistory) =>
+            getWeekNumberOfYearFromDateKey(workHistory.date) === week
+        );
+
+        return {
+          week,
+          histories: weeklyHistories.sort((a, b) =>
+            getValidDateObjectFromLocalDateString(a.date) >
+            getValidDateObjectFromLocalDateString(b.date)
+              ? -1
+              : 1
+          ),
+          lieuTime: calculateTimeLeftInWeek(weeklyHistories),
+        };
+      }),
     };
   });
 
   useEffect(() => {
-    if (historyWeeks.length === 0) return;
+    if (historyYears.length === 0) return;
 
-    const totalLieuTime = historyWeeks
+    const totalLieuTime = historyYears
+      .flatMap((historyYear) => historyYear.histories)
       .map((historyWeek) => historyWeek.lieuTime)
       .reduce((a, b) => a + b);
 
     onHistoryUpdate(totalLieuTime);
-  }, [historyWeeks, onHistoryUpdate]);
+  }, [historyYears, onHistoryUpdate]);
 
   const handleDelete = (day: Workday) => {
     onDelete(day);
@@ -63,18 +90,25 @@ export const WorkHistory = ({
 
   return (
     <div className="flex flex-col gap-4 w-full md:w-3/4 2xl:w-1/2 mb-10">
-      {historyWeeks
-        .sort((a, b) => (a.week > b.week ? -1 : 1))
-        .map((historyWeek) => {
-          return (
-            <WorkHistoryWeek
-              key={historyWeek.week}
-              week={historyWeek}
-              onDelete={handleDelete}
-              onEdit={handleEdit}
-            ></WorkHistoryWeek>
-          );
-        })}
+      {historyYears.map((historyYear) => {
+        return (
+          <div className="flex flex-col my-2 p-5 bg-slate-200 drop-shadow-lg rounded-lg gap-4">
+            <div className="flex text-3xl font-mono">{historyYear.year}</div>
+            {historyYear.histories
+              .sort((a, b) => (a.week > b.week ? -1 : 1))
+              .map((historyWeek) => {
+                return (
+                  <WorkHistoryWeek
+                    key={historyWeek.week}
+                    week={historyWeek}
+                    onDelete={handleDelete}
+                    onEdit={handleEdit}
+                  ></WorkHistoryWeek>
+                );
+              })}
+          </div>
+        );
+      })}
     </div>
   );
 };
