@@ -60,7 +60,7 @@ export default function Home() {
   };
 
   return (
-    <div className="p-10 min-h-screen w-screen bg-slate-300 font-sans text-slate-900">
+    <div className="p-5 min-h-screen w-screen bg-slate-300 font-sans text-slate-900">
       <div className={`flex flex-col items-center ${editing && "blur"}`}>
         <h1 className="text-4xl text-slate-900 font-serif mb-5">Punch Card</h1>
         <Clock
