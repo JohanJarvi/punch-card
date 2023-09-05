@@ -8,3 +8,9 @@ export type HistoryWeek = {
   histories: Workday[];
   lieuTime: number;
 };
+
+export type HistoryYear = {
+  year: number;
+  histories: HistoryWeek[];
+};
+
