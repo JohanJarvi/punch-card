@@ -4,6 +4,7 @@ import { Clock } from "../components/Timer/Clock";
 import { isValidDateKey } from "../utils/DateUtils";
 import { HistoryEditor } from "../components/HistoryEditor/HistoryEditor";
 import { Workday } from "@/models/WorkHistory";
+import Head from "next/head";
 
 export default function Home() {
   const [clockSave, toggleClockSave] = useState(false);
@@ -60,32 +61,39 @@ export default function Home() {
   };
 
   return (
-    <div className="p-5 min-h-screen w-screen bg-slate-300 font-sans text-slate-900">
-      <div className={`flex flex-col items-center ${editing && "blur"}`}>
-        <h1 className="text-4xl text-slate-900 font-serif mb-5">Punch Card</h1>
-        <Clock
-          timeInLieuInSeconds={timeInLieu}
-          onSave={(time: number) => handleClockSave(time)}
-        ></Clock>
-        {histories.length > 0 && (
-          <h2 className="text-3xl text-slate-900 font-serif my-5">
-            Work History
-          </h2>
+    <>
+      <Head>
+        <meta name="theme-color" content="#cbd5e1" />
+      </Head>
+      <div className="p-5 min-h-screen w-screen bg-slate-300 font-sans text-slate-900">
+        <div className={`flex flex-col items-center ${editing && "blur"}`}>
+          <h1 className="text-4xl text-slate-900 font-serif mb-5">
+            Punch Card
+          </h1>
+          <Clock
+            timeInLieuInSeconds={timeInLieu}
+            onSave={(time: number) => handleClockSave(time)}
+          ></Clock>
+          {histories.length > 0 && (
+            <h2 className="text-3xl text-slate-900 font-serif my-5">
+              Work History
+            </h2>
+          )}
+          <WorkHistory
+            workHistories={histories}
+            onHistoryUpdate={(timeInLieu) => setTimeInLieu(timeInLieu)}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          ></WorkHistory>
+        </div>
+        {editing && (
+          <HistoryEditor
+            workDayToEdit={editing}
+            onClose={handleEditorClose}
+            onSave={handleSave}
+          ></HistoryEditor>
         )}
-        <WorkHistory
-          workHistories={histories}
-          onHistoryUpdate={(timeInLieu) => setTimeInLieu(timeInLieu)}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        ></WorkHistory>
       </div>
-      {editing && (
-        <HistoryEditor
-          workDayToEdit={editing}
-          onClose={handleEditorClose}
-          onSave={handleSave}
-        ></HistoryEditor>
-      )}
-    </div>
+    </>
   );
 }
