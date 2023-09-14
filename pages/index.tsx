@@ -5,10 +5,13 @@ import { isValidDateKey } from "../utils/DateUtils";
 import { HistoryEditor } from "../components/HistoryEditor/HistoryEditor";
 import { Workday } from "@/models/WorkHistory";
 import Head from "next/head";
+import { useAppContext } from "./_app";
 
 export default function Home() {
+  const { workDayLength } = useAppContext();
+
   const [clockSave, toggleClockSave] = useState(false);
-  const [timeInLieu, setTimeInLieu] = useState(7.6 * 60 * 60);
+  const [timeInLieu, setTimeInLieu] = useState(workDayLength * 60 * 60);
   const [triggerRefresh, setTriggerRefresh] = useState(false);
   const [editing, setEditing] = useState<Workday>();
 

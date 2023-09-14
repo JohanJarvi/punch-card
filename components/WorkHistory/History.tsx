@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import {
   getValidDateObjectFromLocalDateString,
   getWeekNumberOfYearFromDateKey,
@@ -6,6 +6,7 @@ import {
 } from "../../utils/DateUtils";
 import { WorkHistoryWeek } from "./HistoryWeek";
 import { HistoryYear, Workday } from "@/models/WorkHistory";
+import { useAppContext } from "@/pages/_app";
 
 interface WorkHistoryProps {
   workHistories: Workday[];
@@ -20,6 +21,8 @@ export const WorkHistory = ({
   onDelete,
   onEdit,
 }: WorkHistoryProps) => {
+  const { workDayLength } = useAppContext();
+
   const uniqueYears = Array.from(
     new Set(
       workHistories.map((history) => getYearFromLocaleDateString(history.date))
@@ -28,7 +31,7 @@ export const WorkHistory = ({
 
   const calculateTimeLeftInWeek = (weeklyHistories: Workday[]): number => {
     const lieuTimeWeek = weeklyHistories
-      .map((history) => 7.6 * 60 * 60 - history.time)
+      .map((history) => workDayLength * 60 * 60 - history.time)
       .reduce((a, b) => a + b);
 
     return lieuTimeWeek;

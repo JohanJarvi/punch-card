@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
+import { useAppContext } from "@/pages/_app";
 
 interface RemainingDisplayProps {
   timeLeftSeconds: number;
@@ -15,6 +16,8 @@ type DisplayStyleNode = {
 export const RemainingDisplay = ({
   timeLeftSeconds,
 }: RemainingDisplayProps) => {
+  const { workDayLength } = useAppContext();
+
   const [displayStyle, setDisplayStyle] =
     useState<DisplayStyle>("timePercentage");
 
@@ -36,7 +39,7 @@ export const RemainingDisplay = ({
     const absoluteTimeLeftSecondsDisplay =
       convertSecondsToHoursMinutesSecondsString(Math.abs(timeLeftSeconds));
     const percentageLeft = (
-      (absoluteTimeLeftSeconds / (7.6 * 60 * 60)) *
+      (absoluteTimeLeftSeconds / (workDayLength * 60 * 60)) *
       100
     ).toFixed(percentageDecimals);
 
