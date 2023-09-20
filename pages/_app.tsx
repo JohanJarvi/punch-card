@@ -22,7 +22,7 @@ export const useAppContext = () => {
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <AppContext.Provider value={{ workDayLength: 7.6 }}>
-      <Component {...pageProps} />;
+      <Component {...pageProps} />
     </AppContext.Provider>
   );
 }
