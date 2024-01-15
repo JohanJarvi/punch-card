@@ -1,12 +1,12 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import {
   getValidDateObjectFromLocalDateString,
-  getWeekNumberOfYearFromDateKey,
   getYearFromLocaleDateString,
 } from "../../utils/DateUtils";
 import { WorkHistoryWeek } from "./HistoryWeek";
 import { HistoryYear, Workday } from "@/models/WorkHistory";
 import { useAppContext } from "@/pages/_app";
+import { DateTime } from "luxon";
 
 interface WorkHistoryProps {
   workHistories: Workday[];
@@ -44,8 +44,9 @@ export const WorkHistory = ({
 
     const uniqueYearlyWeeks = Array.from(
       new Set(
-        yearlyHistories.map((history) =>
-          getWeekNumberOfYearFromDateKey(history.date)
+        yearlyHistories.map(
+          (history) =>
+            DateTime.fromFormat(history.date, "dd/mm/yyyy").weekNumber
         )
       )
     );
@@ -55,7 +56,8 @@ export const WorkHistory = ({
       histories: uniqueYearlyWeeks.map((week) => {
         const weeklyHistories = yearlyHistories.filter(
           (workHistory) =>
-            getWeekNumberOfYearFromDateKey(workHistory.date) === week
+            DateTime.fromFormat(workHistory.date, "dd/mm/yyyy").weekNumber ===
+            week
         );
 
         return {

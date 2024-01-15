@@ -37,23 +37,6 @@ export const getEnumeratedWeekDayFromLocaleDateString = (
   return getValidDateObjectFromLocalDateString(localeDateString).getDay();
 };
 
-export const getWeekNumberOfYearFromDateKey = (
-  localeDateString: string
-): number => {
-  const date = getValidDateObjectFromLocalDateString(localeDateString);
-
-  const startDate = new Date(date.getFullYear(), 0, 1);
-  var days = Math.floor(
-    (date.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000)
-  );
-
-  const weekValue = Math.ceil(days / 7);
-
-  if (weekValue === 0) return 52;
-
-  return weekValue;
-};
-
 export const getSecondsDiff = (startDate: Date, endDate: Date) => {
   return Math.round(Math.abs(endDate.getTime() - startDate.getTime()) / 1000);
 };
