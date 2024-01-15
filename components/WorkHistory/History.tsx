@@ -45,8 +45,7 @@ export const WorkHistory = ({
     const uniqueYearlyWeeks = Array.from(
       new Set(
         yearlyHistories.map(
-          (history) =>
-            DateTime.fromFormat(history.date, "dd/mm/yyyy").weekNumber
+          (history) => DateTime.fromFormat(history.date, "d/m/yyyy").weekNumber
         )
       )
     );
@@ -56,7 +55,7 @@ export const WorkHistory = ({
       histories: uniqueYearlyWeeks.map((week) => {
         const weeklyHistories = yearlyHistories.filter(
           (workHistory) =>
-            DateTime.fromFormat(workHistory.date, "dd/mm/yyyy").weekNumber ===
+            DateTime.fromFormat(workHistory.date, "d/m/yyyy").weekNumber ===
             week
         );
 
