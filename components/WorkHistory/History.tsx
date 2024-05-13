@@ -92,7 +92,7 @@ export const WorkHistory = ({
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full md:w-3/4 2xl:w-1/2 mb-10">
+    <div className="flex flex-col gap-4 w-full md:w-3/4 2xl:w-1/3 mb-10">
       {historyYears.map((historyYear) => {
         return (
           <div
