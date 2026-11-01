@@ -1,0 +1,27 @@
+name: Production audit
+
+# Fails when a dependency that ships in the app has a known vulnerability.
+# Dev-only tooling (eslint, jest, ...) is deliberately excluded: its findings
+# are not reachable from the deployed app, and some have no upstream fix yet.
+on:
+  schedule:
+    - cron: "0 22 * * 0" # weekly, Sunday 22:00 UTC (Monday morning in Sydney)
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --omit=dev --ignore-scripts
+      - run: npm audit --omit=dev

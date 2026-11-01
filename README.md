@@ -43,6 +43,12 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The page re
 | `npm run lint`  | Lint the project with ESLint                 |
 | `npm test`      | Run the unit tests with Jest                 |
 
+## Dependencies and security
+
+- A GitHub Action runs `npm audit --omit=dev` on every PR, on pushes to `main` and weekly, and fails if a dependency that ships in the app has a known vulnerability.
+- Dev-only tooling (ESLint, Jest) is excluded on purpose: findings there are not reachable from the deployed app, and some have no upstream fix yet. Do not run `npm audit fix --force` to clear them, as it suggests downgrading ESLint and Jest.
+- Dependabot opens weekly PRs for dependency and GitHub Actions updates, with minor and patch bumps grouped into one PR.
+
 ## Project structure
 
 ```
