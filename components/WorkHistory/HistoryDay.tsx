@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { convertSecondsToHoursMinutesSecondsString } from "../../utils/TimeConverter";
 import { Workday } from "@/models/WorkHistory";
+import { formatDayKey, toDayKey } from "@/utils/DayKey";
 
 interface WorkHistoryDayProps {
   day: Workday;
@@ -14,14 +15,16 @@ export const WorkHistoryDay = ({
   onEdit,
 }: WorkHistoryDayProps) => {
   const isToday = useMemo(
-    () => new Date().toLocaleDateString() === day.date,
+    () => toDayKey() === day.date,
     [day]
   );
+
+  const formattedDate = formatDayKey(day.date);
 
   return (
     <div className="flex flex-row font-mono mb-2 justify-between text-sm md:text-base lg:text-lg">
       <span className={`${isToday && "font-bold"} flex justify-center w-40`}>
-        {day.date}
+        {formattedDate}
       </span>
       <span className={`${isToday && "font-bold"} flex justify-center w-40`}>
         {convertSecondsToHoursMinutesSecondsString(day.time)}
@@ -29,7 +32,7 @@ export const WorkHistoryDay = ({
       <div className="flex flex-row justify-center w-40">
         <button
           className="bg-slate-100 rounded-full w-8 hover:bg-slate-200 flex justify-center items-center"
-          title={`Edit ${day.date}`}
+          title={`Edit ${formattedDate}`}
           onClick={() => onEdit(day)}
         >
           <svg
@@ -49,7 +52,7 @@ export const WorkHistoryDay = ({
         </button>
         <button
           className="bg-slate-100 rounded-full w-8 hover:bg-slate-200 flex items-center justify-center"
-          title={`Delete ${day.date}`}
+          title={`Delete ${formattedDate}`}
           onClick={() => onDelete(day)}
         >
           <svg

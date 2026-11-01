@@ -6,6 +6,8 @@ You can export total hours per financial year (July to June, e.g. `Jul25-Jun26`)
 
 Everything is stored in your browser's `localStorage`. There is no backend and no account.
 
+Each day's total seconds are stored under an ISO day key for the **local** date (e.g. `2026-11-02`), so the stored data does not depend on the browser's locale or timezone. Dates are formatted for display in the user's locale. Data written by older versions under locale-formatted keys (e.g. `2/11/2026`) is migrated automatically on load, and a copy of the original values is kept under `punch-card:backup:legacy-day-keys`.
+
 ## Tech stack
 
 - [Next.js](https://nextjs.org/) (Pages Router) with [React](https://react.dev/)

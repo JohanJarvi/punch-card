@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { Workday } from "@/models/WorkHistory";
-import { parseWorkdayDate } from "./DateUtils";
+import { parseDayKey } from "./DayKey";
 
 export type FinancialYearSummary = {
   /** Calendar year in which the financial year starts, e.g. 2025 for Jul25-Jun26 */
@@ -32,7 +32,7 @@ export const summariseFinancialYears = (
   const secondsByStartYear = new Map<number, number>();
 
   for (const workday of workdays) {
-    const date = parseWorkdayDate(workday.date);
+    const date = parseDayKey(workday.date);
     if (!date.isValid || !Number.isFinite(workday.time)) continue;
 
     const startYear = getFinancialYearStart(date);

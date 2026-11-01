@@ -47,8 +47,8 @@ describe("summariseFinancialYears", () => {
 
   it("groups days either side of 30 June / 1 July into different years", () => {
     const result = summariseFinancialYears([
-      { date: "30/6/2025", time: hours(7.5) },
-      { date: "1/7/2025", time: hours(8) },
+      { date: "2025-06-30", time: hours(7.5) },
+      { date: "2025-07-01", time: hours(8) },
     ]);
 
     expect(result.map((r) => [r.label, r.hours])).toEqual([
@@ -59,8 +59,8 @@ describe("summariseFinancialYears", () => {
 
   it("sums days within a financial year across the calendar year boundary", () => {
     const result = summariseFinancialYears([
-      { date: "15/12/2025", time: hours(7) },
-      { date: "15/1/2026", time: hours(8) },
+      { date: "2025-12-15", time: hours(7) },
+      { date: "2026-01-15", time: hours(8) },
     ]);
 
     expect(result).toHaveLength(1);
@@ -73,9 +73,9 @@ describe("summariseFinancialYears", () => {
 
   it("sorts oldest financial year first", () => {
     const result = summariseFinancialYears([
-      { date: "1/8/2026", time: hours(1) },
-      { date: "1/8/2024", time: hours(1) },
-      { date: "1/8/2025", time: hours(1) },
+      { date: "2026-08-01", time: hours(1) },
+      { date: "2024-08-01", time: hours(1) },
+      { date: "2025-08-01", time: hours(1) },
     ]);
 
     expect(result.map((r) => r.label)).toEqual([
@@ -87,7 +87,7 @@ describe("summariseFinancialYears", () => {
 
   it("rounds hours to two decimal places", () => {
     const result = summariseFinancialYears([
-      { date: "1/8/2025", time: 1000 },
+      { date: "2025-08-01", time: 1000 },
     ]);
 
     expect(result[0].hours).toBe(0.28);
@@ -96,8 +96,8 @@ describe("summariseFinancialYears", () => {
   it("ignores entries with an unparseable date or time", () => {
     const result = summariseFinancialYears([
       { date: "not-a-date", time: hours(5) },
-      { date: "1/8/2025", time: NaN },
-      { date: "1/8/2025", time: hours(2) },
+      { date: "2025-08-01", time: NaN },
+      { date: "2025-08-01", time: hours(2) },
     ]);
 
     expect(result).toHaveLength(1);
@@ -112,8 +112,8 @@ describe("buildFinancialYearCsv", () => {
 
   it("writes one row per financial year", () => {
     const csv = buildFinancialYearCsv([
-      { date: "1/8/2024", time: hours(1900) },
-      { date: "1/8/2025", time: hours(12.5) },
+      { date: "2024-08-01", time: hours(1900) },
+      { date: "2025-08-01", time: hours(12.5) },
     ]);
 
     expect(csv).toBe(

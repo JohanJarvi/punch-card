@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { WorkHistoryWeek } from "./HistoryWeek";
 import { HistoryYear, Workday } from "@/models/WorkHistory";
 import { useAppContext } from "@/pages/_app";
-import { parseWorkdayDate } from "@/utils/DateUtils";
+import { parseDayKey } from "@/utils/DayKey";
 
 interface WorkHistoryProps {
   workHistories: Workday[];
@@ -22,7 +22,7 @@ export const WorkHistory = ({
   const uniqueYears = Array.from(
     new Set(
       workHistories.map(
-        (history) => parseWorkdayDate(history.date).year
+        (history) => parseDayKey(history.date).year
       )
     )
   ).sort((a, b) => (a > b ? -1 : 1));
@@ -38,13 +38,13 @@ export const WorkHistory = ({
   const historyYears: HistoryYear[] = uniqueYears.map((year) => {
     const yearlyHistories = workHistories.filter(
       (workHistory) =>
-        parseWorkdayDate(workHistory.date).year === year
+        parseDayKey(workHistory.date).year === year
     );
 
     const uniqueYearlyWeeks = Array.from(
       new Set(
         yearlyHistories.map(
-          (history) => parseWorkdayDate(history.date).weekNumber
+          (history) => parseDayKey(history.date).weekNumber
         )
       )
     );
@@ -54,15 +54,15 @@ export const WorkHistory = ({
       histories: uniqueYearlyWeeks.map((week) => {
         const weeklyHistories = yearlyHistories.filter(
           (workHistory) =>
-            parseWorkdayDate(workHistory.date).weekNumber ===
+            parseDayKey(workHistory.date).weekNumber ===
             week
         );
 
         return {
           week,
           histories: weeklyHistories.sort((a, b) =>
-            parseWorkdayDate(a.date) >
-            parseWorkdayDate(b.date)
+            parseDayKey(a.date) >
+            parseDayKey(b.date)
               ? -1
               : 1
           ),
