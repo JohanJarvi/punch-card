@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import {
-  buildFinancialYearCsv,
+  buildHistoryCsv,
   formatFinancialYearLabel,
   getFinancialYearStart,
   summariseFinancialYears,
@@ -66,6 +66,7 @@ describe("summariseFinancialYears", () => {
     expect(result).toHaveLength(1);
     expect(result[0]).toMatchObject({
       label: "Jul25-Jun26",
+      days: 2,
       totalSeconds: hours(15),
       hours: 15,
     });
@@ -105,19 +106,89 @@ describe("summariseFinancialYears", () => {
   });
 });
 
-describe("buildFinancialYearCsv", () => {
-  it("returns just the header when there is no history", () => {
-    expect(buildFinancialYearCsv([])).toBe("Financial year,Hours\n");
+describe("buildHistoryCsv", () => {
+  const exportedAt = DateTime.fromISO("2026-11-02T07:15:30.000", {
+    zone: "Australia/Sydney",
   });
 
-  it("writes one row per financial year", () => {
-    const csv = buildFinancialYearCsv([
-      { date: "2024-08-01", time: hours(1900) },
-      { date: "2025-08-01", time: hours(12.5) },
-    ]);
+  it("returns only the headers and export time when there is no history", () => {
+    expect(buildHistoryCsv([], exportedAt)).toBe(
+      [
+        "Date,Duration,Hours,Seconds",
+        "",
+        "Financial year,Days,Duration,Hours,Seconds",
+        "",
+        "Exported at,2026-11-02T07:15:30.000+11:00",
+        "",
+      ].join("\n")
+    );
+  });
+
+  it("lists every day oldest first, then the financial year totals, then the export time", () => {
+    const csv = buildHistoryCsv(
+      [
+        { date: "2025-08-02", time: 27360 },
+        { date: "2024-08-01", time: hours(8) },
+        { date: "2025-08-01", time: 3600 },
+      ],
+      exportedAt
+    );
 
     expect(csv).toBe(
-      "Financial year,Hours\nJul24-Jun25,1900.00\nJul25-Jun26,12.50\n"
+      [
+        "Date,Duration,Hours,Seconds",
+        "2024-08-01,08:00:00,8.00,28800",
+        "2025-08-01,01:00:00,1.00,3600",
+        "2025-08-02,07:36:00,7.60,27360",
+        "",
+        "Financial year,Days,Duration,Hours,Seconds",
+        "Jul24-Jun25,1,08:00:00,8.00,28800",
+        "Jul25-Jun26,2,08:36:00,8.60,30960",
+        "",
+        "Exported at,2026-11-02T07:15:30.000+11:00",
+        "",
+      ].join("\n")
     );
+  });
+
+  it("shows each day as a readable HH:MM:SS duration next to the date", () => {
+    const csv = buildHistoryCsv(
+      [{ date: "2026-11-02", time: 7 * 3600 + 23 * 60 + 21 }],
+      exportedAt
+    );
+
+    expect(csv).toContain("\n2026-11-02,07:23:21,7.39,26601\n");
+  });
+
+  it("keeps the raw seconds so the log can be restored exactly", () => {
+    const csv = buildHistoryCsv([{ date: "2025-08-01", time: 1001 }], exportedAt);
+
+    expect(csv).toContain("2025-08-01,00:16:41,0.28,1001");
+  });
+
+  it("keeps a day with an unreadable time as a blank row and leaves it out of the totals", () => {
+    const csv = buildHistoryCsv(
+      [
+        { date: "2025-08-01", time: NaN },
+        { date: "2025-08-02", time: hours(2) },
+      ],
+      exportedAt
+    );
+
+    expect(csv).toContain("2025-08-01,,,\n");
+    expect(csv).toContain("Jul25-Jun26,1,02:00:00,2.00,7200");
+  });
+
+  it("leaves out entries whose date is not a valid day key", () => {
+    const csv = buildHistoryCsv(
+      [
+        { date: "not-a-date", time: hours(5) },
+        { date: "2025-08-01", time: hours(1) },
+      ],
+      exportedAt
+    );
+
+    expect(csv).not.toContain("not-a-date");
+    expect(csv).toContain("Jul25-Jun26,1,01:00:00,1.00,3600");
   });
 });

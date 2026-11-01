@@ -1,12 +1,15 @@
 import { DateTime } from "luxon";
 import { Workday } from "@/models/WorkHistory";
 import { parseDayKey } from "./DayKey";
+import { convertSecondsToHoursMinutesSecondsString } from "./TimeConverter";
 
 export type FinancialYearSummary = {
   /** Calendar year in which the financial year starts, e.g. 2025 for Jul25-Jun26 */
   startYear: number;
   /** e.g. "Jul25-Jun26" */
   label: string;
+  /** Number of logged days in the financial year */
+  days: number;
   totalSeconds: number;
   hours: number;
 };
@@ -29,33 +32,81 @@ export const formatFinancialYearLabel = (startYear: number): string =>
 export const summariseFinancialYears = (
   workdays: Workday[]
 ): FinancialYearSummary[] => {
-  const secondsByStartYear = new Map<number, number>();
+  const totalsByStartYear = new Map<number, { days: number; seconds: number }>();
 
   for (const workday of workdays) {
     const date = parseDayKey(workday.date);
     if (!date.isValid || !Number.isFinite(workday.time)) continue;
 
     const startYear = getFinancialYearStart(date);
-    secondsByStartYear.set(
-      startYear,
-      (secondsByStartYear.get(startYear) ?? 0) + workday.time
-    );
+    const totals = totalsByStartYear.get(startYear) ?? { days: 0, seconds: 0 };
+    totalsByStartYear.set(startYear, {
+      days: totals.days + 1,
+      seconds: totals.seconds + workday.time,
+    });
   }
 
-  return Array.from(secondsByStartYear.entries())
+  return Array.from(totalsByStartYear.entries())
     .sort(([a], [b]) => a - b)
-    .map(([startYear, totalSeconds]) => ({
+    .map(([startYear, { days, seconds }]) => ({
       startYear,
       label: formatFinancialYearLabel(startYear),
-      totalSeconds,
-      hours: Math.round((totalSeconds / 3600) * 100) / 100,
+      days,
+      totalSeconds: seconds,
+      hours: Math.round((seconds / 3600) * 100) / 100,
     }));
 };
 
-export const buildFinancialYearCsv = (workdays: Workday[]): string => {
-  const rows = summariseFinancialYears(workdays).map(
-    ({ label, hours }) => `${label},${hours.toFixed(2)}`
+const toHours = (seconds: number): string => (seconds / 3600).toFixed(2);
+
+/**
+ * The full log as CSV, oldest day first: every day with its readable
+ * duration (HH:MM:SS), decimal hours and raw seconds (the lossless value),
+ * then a section totalling each financial year, then when the export was
+ * made.
+ *
+ * Days with an unreadable time keep their row with blank values so they stay
+ * visible in the log, but are left out of the totals.
+ */
+export const buildHistoryCsv = (
+  workdays: Workday[],
+  exportedAt: DateTime = DateTime.local()
+): string => {
+  const days = workdays
+    .filter((workday) => parseDayKey(workday.date).isValid)
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
+  const dayRows = days.map(({ date, time }) =>
+    Number.isFinite(time)
+      ? [
+          date,
+          convertSecondsToHoursMinutesSecondsString(time),
+          toHours(time),
+          String(time),
+        ].join(",")
+      : `${date},,,`
   );
 
-  return ["Financial year,Hours", ...rows].join("\n") + "\n";
+  const summaryRows = summariseFinancialYears(workdays).map(
+    ({ label, days, totalSeconds, hours }) =>
+      [
+        label,
+        days,
+        convertSecondsToHoursMinutesSecondsString(totalSeconds),
+        hours.toFixed(2),
+        totalSeconds,
+      ].join(",")
+  );
+
+  return (
+    [
+      "Date,Duration,Hours,Seconds",
+      ...dayRows,
+      "",
+      "Financial year,Days,Duration,Hours,Seconds",
+      ...summaryRows,
+      "",
+      `Exported at,${exportedAt.toISO()}`,
+    ].join("\n") + "\n"
+  );
 };
