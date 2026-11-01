@@ -2,7 +2,7 @@
 
 A small time-tracking app for logging your working hours. Start and stop a clock during the day, see how much of your work day is left, and review your history by week and year, including time in lieu.
 
-You can export total hours per financial year (July to June, e.g. `Jul25-Jun26`) as a CSV.
+You can export the full history as a CSV: every day with its duration (`HH:MM:SS`), decimal hours and raw seconds, followed by a section totalling each financial year (July to June, e.g. `Jul25-Jun26`) and the time of the export.
 
 Everything is stored in your browser's `localStorage`. There is no backend and no account.
 
