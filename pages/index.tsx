@@ -3,6 +3,7 @@ import { WorkHistory } from "../components/WorkHistory/History";
 import { Clock } from "../components/Timer/Clock";
 import { isValidDateKey } from "../utils/DateUtils";
 import { HistoryEditor } from "../components/HistoryEditor/HistoryEditor";
+import { ExportCsvButton } from "../components/Export/ExportCsvButton";
 import { Workday } from "@/models/WorkHistory";
 import Head from "next/head";
 import { useAppContext } from "./_app";
@@ -81,6 +82,11 @@ export default function Home() {
             <h2 className="text-3xl text-slate-900 font-serif my-5">
               Work History
             </h2>
+          )}
+          {histories.length > 0 && (
+            <div className="mb-5">
+              <ExportCsvButton workHistories={histories} />
+            </div>
           )}
           <WorkHistory
             workHistories={histories}
