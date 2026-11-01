@@ -4,7 +4,7 @@ import { getSecondsDiff } from "../../utils/DateUtils";
 
 interface ClockProps {
   timeInLieuInSeconds: number;
-  onSave: Function;
+  onSave: (timeInSeconds: number) => void;
 }
 
 export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
@@ -17,6 +17,32 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
     localStorage && localStorage.getItem("isRunning") === "true"
   );
 
+  const setStartTime = () => {
+    localStorage &&
+      localStorage.setItem(
+        `${new Date().toLocaleDateString()}-start`,
+        new Date().toISOString()
+      );
+  };
+
+  const performSave = (elapsedSeconds: number = time) => {
+    const currentTimeWorked = Number(
+      (localStorage && localStorage.getItem(new Date().toLocaleDateString())) ||
+        ""
+    );
+
+    const totalTimeWorked = currentTimeWorked + elapsedSeconds;
+
+    onSave(totalTimeWorked);
+  };
+
+  const handleHistorySave = (elapsedSeconds: number = time) => {
+    performSave(elapsedSeconds);
+    setTime(0);
+    setTimeSinceSave(0);
+    setStartTime();
+  };
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
@@ -28,41 +54,22 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
     };
 
     if (isRunning) {
-      if (timeSinceSave >= 30) {
-        handleHistorySave();
-      }
-
       intervalId = setInterval(() => {
         const startDateLocalStorage = getStartDateFromLocalStorage();
         const timeNow = new Date();
         const secondsDiff = getSecondsDiff(startDateLocalStorage, timeNow);
 
-        setTimeSinceSave(timeSinceSave + 1);
-        setTime(secondsDiff);
+        if (timeSinceSave + 1 >= 30) {
+          handleHistorySave(secondsDiff);
+        } else {
+          setTimeSinceSave(timeSinceSave + 1);
+          setTime(secondsDiff);
+        }
       }, 1000);
     }
 
     return () => clearInterval(intervalId);
   }, [time, isRunning]);
-
-  const setStartTime = () => {
-    localStorage &&
-      localStorage.setItem(
-        `${new Date().toLocaleDateString()}-start`,
-        new Date().toISOString()
-      );
-  };
-
-  const performSave = () => {
-    const currentTimeWorked = Number(
-      (localStorage && localStorage.getItem(new Date().toLocaleDateString())) ||
-        ""
-    );
-
-    const totalTimeWorked = currentTimeWorked + time;
-
-    onSave(totalTimeWorked);
-  };
 
   const timeLeftSeconds = timeInLieuInSeconds - time;
 
@@ -78,13 +85,6 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
       setIsRunning(true);
       setStartTime();
     }
-  };
-
-  const handleHistorySave = () => {
-    performSave();
-    setTime(0);
-    setTimeSinceSave(0);
-    setStartTime();
   };
 
   return (
@@ -108,7 +108,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
 
         <button
           className="text-xl bg-slate-400 rounded-full px-5 drop-shadow-md hover:bg-slate-300 h-12 w-36 md:w-48"
-          onClick={handleHistorySave}
+          onClick={() => handleHistorySave()}
         >
           Save
         </button>
