@@ -37,6 +37,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The page re
 | `npm run build` | Create an optimised production build         |
 | `npm start`     | Serve the production build (run `build` first) |
 | `npm run lint`  | Lint the project with ESLint                 |
+| `npm test`      | Run the unit tests with Jest                 |
 
 ## Project structure
 

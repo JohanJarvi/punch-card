@@ -18,9 +18,9 @@ export const HistoryEditor = ({
 }: HistoryEditorProps) => {
   const [newTime, setNewTime] = useState(0);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.target;
+    const form = e.currentTarget;
     const formData = new FormData(form);
     const json = Object.fromEntries(formData.entries());
     const newTime = json["newTime"].toString();

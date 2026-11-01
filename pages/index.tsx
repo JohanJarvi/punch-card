@@ -19,7 +19,7 @@ export default function Home() {
     typeof window !== "undefined" ? window.localStorage : undefined;
 
   const histories = useMemo(() => {
-    let histories = [];
+    const histories = [];
 
     if (!localStorage) return [];
 
