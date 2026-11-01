@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { WorkHistory } from "../components/WorkHistory/History";
 import { Clock } from "../components/Timer/Clock";
-import { isDayKey, toDayKey } from "../utils/DayKey";
+import { toDayKey } from "../utils/DayKey";
 import { migrateLegacyDayKeys } from "../utils/DayKeyMigration";
+import { readWorkdays, storage } from "../utils/Storage";
 import { HistoryEditor } from "../components/HistoryEditor/HistoryEditor";
 import { ExportCsvButton } from "../components/Export/ExportCsvButton";
 import { DeleteOldHistory } from "../components/HistoryCleanup/DeleteOldHistory";
@@ -13,49 +14,34 @@ import { useAppContext } from "./_app";
 export default function Home() {
   const { workDayLength } = useAppContext();
 
-  const [clockSave, toggleClockSave] = useState(false);
   const [timeInLieu, setTimeInLieu] = useState(workDayLength * 60 * 60);
-  const [triggerRefresh, setTriggerRefresh] = useState(false);
   const [editing, setEditing] = useState<Workday>();
 
-  const localStorage =
-    typeof window !== "undefined" ? window.localStorage : undefined;
+  // Convert locale-formatted keys from older versions to ISO day keys, then
+  // read the history. The conversion runs once, before anything (including
+  // the Clock) reads from storage, and is safe to repeat.
+  const [histories, setHistories] = useState<Workday[]>(() => {
+    if (storage) migrateLegacyDayKeys(storage);
+    return readWorkdays(storage);
+  });
 
-  // Convert locale-formatted keys from older versions to ISO day keys. This
-  // runs once, before anything below (or the Clock) reads from storage, and
-  // is safe to repeat.
-  useState(() => localStorage && migrateLegacyDayKeys(localStorage));
-
-  const histories = useMemo(() => {
-    const histories = [];
-
-    if (!localStorage) return [];
-
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i) || "";
-      if (!isDayKey(key)) continue;
-
-      const item = Number.parseInt(localStorage.getItem(key) || "");
-      histories.push({ date: key, time: item });
-    }
-    return histories;
-  }, [clockSave, triggerRefresh]);
+  const refreshHistories = () => setHistories(readWorkdays(storage));
 
   const handleClockSave = (time: number) => {
-    localStorage && localStorage.setItem(toDayKey(), time.toString());
-    toggleClockSave(!clockSave);
+    storage?.setItem(toDayKey(), time.toString());
+    refreshHistories();
   };
 
   const handleDelete = (day: Workday) => {
-    localStorage && localStorage.removeItem(day.date);
-    setTriggerRefresh(!triggerRefresh);
+    storage?.removeItem(day.date);
+    refreshHistories();
   };
 
   // Only the day entries are removed. The running clock's keys and the
   // legacy-key backup are left alone.
   const handleDeleteMany = (days: Workday[]) => {
-    days.forEach((day) => localStorage && localStorage.removeItem(day.date));
-    setTriggerRefresh(!triggerRefresh);
+    days.forEach((day) => storage?.removeItem(day.date));
+    refreshHistories();
   };
 
   const handleEdit = (day: Workday) => {
@@ -67,9 +53,8 @@ export default function Home() {
   };
 
   const handleSave = (updatedWorkday: Workday) => {
-    localStorage &&
-      localStorage.setItem(updatedWorkday.date, updatedWorkday.time.toString());
-    setTriggerRefresh(!triggerRefresh);
+    storage?.setItem(updatedWorkday.date, updatedWorkday.time.toString());
+    refreshHistories();
     handleEditorClose();
   };
 
