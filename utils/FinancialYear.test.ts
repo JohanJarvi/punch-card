@@ -3,6 +3,7 @@ import {
   buildHistoryCsv,
   formatFinancialYearLabel,
   getFinancialYearStart,
+  planDeleteBeforeCurrentFinancialYear,
   summariseFinancialYears,
 } from "./FinancialYear";
 
@@ -190,5 +191,86 @@ describe("buildHistoryCsv", () => {
 
     expect(csv).not.toContain("not-a-date");
     expect(csv).toContain("Jul25-Jun26,1,01:00:00,1.00,3600");
+  });
+});
+
+describe("planDeleteBeforeCurrentFinancialYear", () => {
+  const now = DateTime.fromISO("2026-11-02T07:00:00", {
+    zone: "Australia/Sydney",
+  });
+
+  const history = [
+    { date: "2024-08-01", time: hours(8) },
+    { date: "2025-06-30", time: hours(7) },
+    { date: "2025-07-01", time: hours(6) },
+    { date: "2026-06-30", time: hours(5) },
+    { date: "2026-07-01", time: hours(4) },
+    { date: "2026-11-02", time: hours(3) },
+  ];
+
+  it("keeps the whole current financial year and deletes everything before it", () => {
+    const plan = planDeleteBeforeCurrentFinancialYear(history, now);
+
+    expect(plan.currentLabel).toBe("Jul26-Jun27");
+    expect(plan.cutoffDayKey).toBe("2026-07-01");
+    expect(plan.toDelete.map((d) => d.date)).toEqual([
+      "2024-08-01",
+      "2025-06-30",
+      "2025-07-01",
+      "2026-06-30",
+    ]);
+    expect(plan.toKeep.map((d) => d.date)).toEqual([
+      "2026-07-01",
+      "2026-11-02",
+    ]);
+  });
+
+  it("treats 1 July as the first kept day and 30 June as the last deleted day", () => {
+    const plan = planDeleteBeforeCurrentFinancialYear(history, now);
+
+    expect(plan.toDelete.map((d) => d.date)).toContain("2026-06-30");
+    expect(plan.toKeep.map((d) => d.date)).toContain("2026-07-01");
+  });
+
+  it("uses the previous July before the new financial year starts", () => {
+    const plan = planDeleteBeforeCurrentFinancialYear(
+      history,
+      DateTime.fromISO("2026-06-30T23:00:00", { zone: "Australia/Sydney" })
+    );
+
+    expect(plan.currentLabel).toBe("Jul25-Jun26");
+    expect(plan.toDelete.map((d) => d.date)).toEqual([
+      "2024-08-01",
+      "2025-06-30",
+    ]);
+  });
+
+  it("summarises the years being deleted", () => {
+    const plan = planDeleteBeforeCurrentFinancialYear(history, now);
+
+    expect(plan.deletedYears.map((y) => [y.label, y.days])).toEqual([
+      ["Jul24-Jun25", 2],
+      ["Jul25-Jun26", 2],
+    ]);
+  });
+
+  it("deletes nothing when all history is in the current financial year", () => {
+    const plan = planDeleteBeforeCurrentFinancialYear(
+      [{ date: "2026-08-01", time: hours(1) }],
+      now
+    );
+
+    expect(plan.toDelete).toEqual([]);
+    expect(plan.deletedYears).toEqual([]);
+  });
+
+  it("never deletes entries it cannot read as a day key", () => {
+    const plan = planDeleteBeforeCurrentFinancialYear(
+      [{ date: "2/11/2020", time: hours(1) }],
+      now
+    );
+
+    expect(plan.toDelete).toEqual([]);
+    expect(plan.toKeep).toHaveLength(1);
   });
 });

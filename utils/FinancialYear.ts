@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { Workday } from "@/models/WorkHistory";
-import { parseDayKey } from "./DayKey";
+import { isDayKey, parseDayKey } from "./DayKey";
 import { convertSecondsToHoursMinutesSecondsString } from "./TimeConverter";
 
 export type FinancialYearSummary = {
@@ -109,4 +109,43 @@ export const buildHistoryCsv = (
       `Exported at,${exportedAt.toISO()}`,
     ].join("\n") + "\n"
   );
+};
+
+export type DeleteBeforeCurrentYearPlan = {
+  /** e.g. "Jul26-Jun27" */
+  currentLabel: string;
+  /** The first day that is kept, e.g. "2026-07-01" */
+  cutoffDayKey: string;
+  toDelete: Workday[];
+  toKeep: Workday[];
+  /** Per-year totals of what would be deleted, oldest first */
+  deletedYears: FinancialYearSummary[];
+};
+
+/**
+ * Splits the history into days before the current financial year (to delete)
+ * and days in it or later (to keep). Day keys are ISO dates, so comparing them
+ * as strings is the same as comparing the dates.
+ */
+export const planDeleteBeforeCurrentFinancialYear = (
+  workdays: Workday[],
+  now: DateTime = DateTime.local()
+): DeleteBeforeCurrentYearPlan => {
+  const startYear = getFinancialYearStart(now);
+  const cutoffDayKey = `${startYear}-07-01`;
+
+  const toDelete: Workday[] = [];
+  const toKeep: Workday[] = [];
+  for (const workday of workdays) {
+    const isOlder = isDayKey(workday.date) && workday.date < cutoffDayKey;
+    (isOlder ? toDelete : toKeep).push(workday);
+  }
+
+  return {
+    currentLabel: formatFinancialYearLabel(startYear),
+    cutoffDayKey,
+    toDelete,
+    toKeep,
+    deletedYears: summariseFinancialYears(toDelete),
+  };
 };
