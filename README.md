@@ -2,6 +2,8 @@
 
 A small time-tracking app for logging your working hours. Start and stop a clock during the day, see how much of your work day is left, and review your history by week and year, including time in lieu.
 
+You can export total hours per financial year (July to June, e.g. `Jul25-Jun26`) as a CSV.
+
 Everything is stored in your browser's `localStorage`. There is no backend and no account.
 
 ## Tech stack
@@ -42,7 +44,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The page re
 ## Project structure
 
 ```
-components/   React components (Timer, WorkHistory, HistoryEditor)
+components/   React components (Timer, WorkHistory, HistoryEditor, Export)
 models/       Shared TypeScript types
 pages/        Next.js pages (index, _app, _document)
 styles/       Global styles and Tailwind directives
