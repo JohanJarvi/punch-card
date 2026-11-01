@@ -14,7 +14,7 @@ Everything is stored in your browser's `localStorage`. There is no backend and n
 
 ## Getting started
 
-This project uses Node 24 (the current LTS), pinned in `.nvmrc`. If you use [nvm](https://github.com/nvm-sh/nvm):
+This project uses Node 24 (the current LTS), pinned in `.nvmrc` and in `engines` in `package.json` (which is what Vercel uses to pick the Node version). If you use [nvm](https://github.com/nvm-sh/nvm):
 
 ```bash
 nvm use
