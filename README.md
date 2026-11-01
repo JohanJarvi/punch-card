@@ -49,7 +49,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The page re
 - CI (GitHub Actions) runs typecheck, lint, tests and a production build on every PR and on pushes to `main`.
 - A separate GitHub Action runs `npm audit --omit=dev` on every PR, on pushes to `main` and weekly, and fails if a dependency that ships in the app has a known vulnerability.
 - Dev-only tooling (ESLint, Jest) is excluded on purpose: findings there are not reachable from the deployed app, and some have no upstream fix yet. Do not run `npm audit fix --force` to clear them, as it suggests downgrading ESLint and Jest.
-- Dependabot opens weekly PRs for dependency and GitHub Actions updates, with minor and patch bumps grouped into one PR.
+- Dependabot opens weekly PRs for dependency and GitHub Actions updates. Next.js and React move in one PR, other minor and patch bumps share another, and Actions updates are grouped. Major versions of dev tooling (ESLint, Jest, Tailwind, `@types/node`, TypeScript) are ignored on purpose and upgraded by hand; see the comments in `.github/dependabot.yml` for why.
 
 ## Project structure
 

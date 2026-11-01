@@ -6,11 +6,42 @@ updates:
       interval: weekly
       day: monday
       timezone: Australia/Sydney
+    open-pull-requests-limit: 3
     groups:
-      # One PR for routine minor/patch bumps rather than one per package
+      # Next.js, React and their lint/type packages move together
+      next-and-react:
+        patterns:
+          - next
+          - eslint-config-next
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+      # One PR for all other routine minor/patch bumps
       minor-and-patch:
         update-types: [minor, patch]
-    open-pull-requests-limit: 5
+    ignore:
+      # Major versions of dev tooling are upgraded by hand, not by bot PRs.
+      # ESLint 10: eslint-plugin-react (via eslint-config-next) does not
+      # support it yet.
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
+      # Jest and its companions must move together, as one deliberate change.
+      - dependency-name: jest
+        update-types: ["version-update:semver-major"]
+      - dependency-name: jest-environment-jsdom
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/jest"
+        update-types: ["version-update:semver-major"]
+      # Tailwind 4 is a config and PostCSS migration.
+      - dependency-name: tailwindcss
+        update-types: ["version-update:semver-major"]
+      # Keep the types in line with the Node major in .nvmrc (24).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # TypeScript 7 is the native rewrite; stay on 5.x for now.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
@@ -18,3 +49,6 @@ updates:
       interval: weekly
       day: monday
       timezone: Australia/Sydney
+    groups:
+      github-actions:
+        patterns: ["*"]
