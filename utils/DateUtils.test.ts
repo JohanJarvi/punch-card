@@ -1,4 +1,7 @@
-import { getTimeLeftInSecondsOfWorkWeek } from "./DateUtils";
+import {
+  getTimeInLieuInSeconds,
+  getTimeLeftInSecondsOfWorkWeek,
+} from "./DateUtils";
 
 describe("getTimeLeftInSecondsOfWorkWeek", () => {
   let standardWorkWeekDurationInSeconds: number;
@@ -71,5 +74,30 @@ describe("getTimeLeftInSecondsOfWorkWeek", () => {
 
     // Then
     expect(result).toBe(workDayDurationSeconds - timeWorkedInSecondsThisWeek);
+  });
+});
+
+describe("getTimeInLieuInSeconds", () => {
+  const hour = 3600;
+
+  it("is zero with no days", () => {
+    expect(getTimeInLieuInSeconds([], 7.6)).toBe(0);
+  });
+
+  it("is positive for time still owed", () => {
+    expect(getTimeInLieuInSeconds([{ time: 7 * hour }], 7.6)).toBe(0.6 * hour);
+  });
+
+  it("is negative for time banked, and offsets owed days", () => {
+    expect(
+      getTimeInLieuInSeconds([{ time: 8 * hour }, { time: 7 * hour }], 8)
+    ).toBe(hour);
+    expect(getTimeInLieuInSeconds([{ time: 9 * hour }], 8)).toBe(-hour);
+  });
+
+  it("skips days with an unreadable time", () => {
+    expect(
+      getTimeInLieuInSeconds([{ time: NaN }, { time: 7 * hour }], 8)
+    ).toBe(hour);
   });
 });

@@ -5,6 +5,7 @@ import { isDayKey, toDayKey } from "../utils/DayKey";
 import { migrateLegacyDayKeys } from "../utils/DayKeyMigration";
 import { HistoryEditor } from "../components/HistoryEditor/HistoryEditor";
 import { ExportCsvButton } from "../components/Export/ExportCsvButton";
+import { DeleteOldHistory } from "../components/HistoryCleanup/DeleteOldHistory";
 import { Workday } from "@/models/WorkHistory";
 import Head from "next/head";
 import { useAppContext } from "./_app";
@@ -50,6 +51,13 @@ export default function Home() {
     setTriggerRefresh(!triggerRefresh);
   };
 
+  // Only the day entries are removed. The running clock's keys and the
+  // legacy-key backup are left alone.
+  const handleDeleteMany = (days: Workday[]) => {
+    days.forEach((day) => localStorage && localStorage.removeItem(day.date));
+    setTriggerRefresh(!triggerRefresh);
+  };
+
   const handleEdit = (day: Workday) => {
     setEditing(day);
   };
@@ -85,8 +93,12 @@ export default function Home() {
             </h2>
           )}
           {histories.length > 0 && (
-            <div className="mb-5">
+            <div className="flex flex-row flex-wrap justify-center gap-3 mb-5">
               <ExportCsvButton workHistories={histories} />
+              <DeleteOldHistory
+                workHistories={histories}
+                onDelete={handleDeleteMany}
+              />
             </div>
           )}
           <WorkHistory

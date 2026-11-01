@@ -73,7 +73,11 @@ export const WorkHistory = ({
   });
 
   useEffect(() => {
-    if (historyYears.length === 0) return;
+    if (historyYears.length === 0) {
+      // With no history there is no balance, just the one day ahead
+      onHistoryUpdate(workDayLength * 60 * 60);
+      return;
+    }
 
     const totalLieuTime = historyYears
       .flatMap((historyYear) => historyYear.histories)
@@ -81,7 +85,7 @@ export const WorkHistory = ({
       .reduce((a, b) => a + b);
 
     onHistoryUpdate(totalLieuTime);
-  }, [historyYears, onHistoryUpdate]);
+  }, [historyYears, onHistoryUpdate, workDayLength]);
 
   const handleDelete = (day: Workday) => {
     onDelete(day);
