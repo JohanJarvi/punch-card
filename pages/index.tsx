@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { WorkHistory } from "../components/WorkHistory/History";
 import { Clock } from "../components/Timer/Clock";
-import { isValidDateKey } from "../utils/DateUtils";
+import { isDayKey, toDayKey } from "../utils/DayKey";
+import { migrateLegacyDayKeys } from "../utils/DayKeyMigration";
 import { HistoryEditor } from "../components/HistoryEditor/HistoryEditor";
 import { ExportCsvButton } from "../components/Export/ExportCsvButton";
 import { Workday } from "@/models/WorkHistory";
@@ -19,6 +20,11 @@ export default function Home() {
   const localStorage =
     typeof window !== "undefined" ? window.localStorage : undefined;
 
+  // Convert locale-formatted keys from older versions to ISO day keys. This
+  // runs once, before anything below (or the Clock) reads from storage, and
+  // is safe to repeat.
+  useState(() => localStorage && migrateLegacyDayKeys(localStorage));
+
   const histories = useMemo(() => {
     const histories = [];
 
@@ -26,10 +32,7 @@ export default function Home() {
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i) || "";
-      if (key.includes("-start")) continue;
-      if (key.includes("-current")) continue;
-
-      if (!isValidDateKey(key)) continue;
+      if (!isDayKey(key)) continue;
 
       const item = Number.parseInt(localStorage.getItem(key) || "");
       histories.push({ date: key, time: item });
@@ -38,9 +41,7 @@ export default function Home() {
   }, [clockSave, triggerRefresh]);
 
   const handleClockSave = (time: number) => {
-    const localeDateString = new Date().toLocaleDateString();
-
-    localStorage && localStorage.setItem(localeDateString, time.toString());
+    localStorage && localStorage.setItem(toDayKey(), time.toString());
     toggleClockSave(!clockSave);
   };
 

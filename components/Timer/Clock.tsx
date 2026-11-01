@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { RemainingDisplay } from "./RemainingDisplay";
 import { getSecondsDiff } from "../../utils/DateUtils";
+import { toDayKey } from "../../utils/DayKey";
 
 interface ClockProps {
   timeInLieuInSeconds: number;
@@ -20,14 +21,14 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
   const setStartTime = () => {
     localStorage &&
       localStorage.setItem(
-        `${new Date().toLocaleDateString()}-start`,
+        `${toDayKey()}-start`,
         new Date().toISOString()
       );
   };
 
   const performSave = (elapsedSeconds: number = time) => {
     const currentTimeWorked = Number(
-      (localStorage && localStorage.getItem(new Date().toLocaleDateString())) ||
+      (localStorage && localStorage.getItem(toDayKey())) ||
         ""
     );
 
@@ -49,7 +50,7 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
     const getStartDateFromLocalStorage = (): Date => {
       const utcString =
         localStorage &&
-        localStorage.getItem(`${new Date().toLocaleDateString()}-start`);
+        localStorage.getItem(`${toDayKey()}-start`);
       return utcString ? new Date(utcString) : new Date();
     };
 

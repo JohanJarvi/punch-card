@@ -4,6 +4,7 @@ import {
   convertSecondsToHoursMinutesSecondsString,
 } from "../../utils/TimeConverter";
 import { Workday } from "@/models/WorkHistory";
+import { formatDayKey } from "@/utils/DayKey";
 
 interface HistoryEditorProps {
   workDayToEdit: Workday;
@@ -35,7 +36,7 @@ export const HistoryEditor = ({
 
   return (
     <div className="absolute bg-slate-200 drop-shadow-md rounded-lg z-10 flex flex-col items-center justify-around inset-x-0 bottom-0 md:inset-1/3 xl:top-1/3 xl:inset-x-1/2 xl:w-1/6 xl:h-1/6">
-      <span className="flex mt-2 text-lg font-bold">{workDayToEdit.date}</span>
+      <span className="flex mt-2 text-lg font-bold">{formatDayKey(workDayToEdit.date)}</span>
       <div className="flex flex-col">
         <span className="flex w-48 justify-center">Current</span>
         <span className="flex w-48 justify-center font-mono">
