@@ -40,7 +40,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The page re
 | `npm run dev`   | Start the development server                 |
 | `npm run build` | Create an optimised production build         |
 | `npm start`     | Serve the production build (run `build` first) |
-| `npm run lint`  | Lint the project with ESLint                 |
+| `npm run lint`  | Lint with ESLint (warnings fail the run)     |
 | `npm run typecheck` | Type-check with TypeScript               |
 | `npm test`      | Run the unit tests with Jest                 |
 

@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RemainingDisplay } from "./RemainingDisplay";
 import { getSecondsDiff } from "../../utils/DateUtils";
 import { toDayKey } from "../../utils/DayKey";
+import { storage } from "../../utils/Storage";
 
 interface ClockProps {
   timeInLieuInSeconds: number;
@@ -9,28 +10,18 @@ interface ClockProps {
 }
 
 export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
-  const localStorage =
-    typeof window !== "undefined" ? window.localStorage : undefined;
-
   const [time, setTime] = useState(0);
   const [timeSinceSave, setTimeSinceSave] = useState(0);
   const [isRunning, setIsRunning] = useState(
-    localStorage && localStorage.getItem("isRunning") === "true"
+    storage?.getItem("isRunning") === "true"
   );
 
   const setStartTime = () => {
-    localStorage &&
-      localStorage.setItem(
-        `${toDayKey()}-start`,
-        new Date().toISOString()
-      );
+    storage?.setItem(`${toDayKey()}-start`, new Date().toISOString());
   };
 
   const performSave = (elapsedSeconds: number = time) => {
-    const currentTimeWorked = Number(
-      (localStorage && localStorage.getItem(toDayKey())) ||
-        ""
-    );
+    const currentTimeWorked = Number(storage?.getItem(toDayKey()) || "");
 
     const totalTimeWorked = currentTimeWorked + elapsedSeconds;
 
@@ -44,45 +35,47 @@ export const Clock = ({ timeInLieuInSeconds, onSave }: ClockProps) => {
     setStartTime();
   };
 
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+  const getStartDate = (): Date => {
+    const startedAt = storage?.getItem(`${toDayKey()}-start`);
+    return startedAt ? new Date(startedAt) : new Date();
+  };
 
-    const getStartDateFromLocalStorage = (): Date => {
-      const utcString =
-        localStorage &&
-        localStorage.getItem(`${toDayKey()}-start`);
-      return utcString ? new Date(utcString) : new Date();
-    };
+  const tick = () => {
+    const secondsDiff = getSecondsDiff(getStartDate(), new Date());
 
-    if (isRunning) {
-      intervalId = setInterval(() => {
-        const startDateLocalStorage = getStartDateFromLocalStorage();
-        const timeNow = new Date();
-        const secondsDiff = getSecondsDiff(startDateLocalStorage, timeNow);
-
-        if (timeSinceSave + 1 >= 30) {
-          handleHistorySave(secondsDiff);
-        } else {
-          setTimeSinceSave(timeSinceSave + 1);
-          setTime(secondsDiff);
-        }
-      }, 1000);
+    if (timeSinceSave + 1 >= 30) {
+      handleHistorySave(secondsDiff);
+    } else {
+      setTimeSinceSave(timeSinceSave + 1);
+      setTime(secondsDiff);
     }
+  };
 
+  // The interval runs for as long as the clock is running and always calls the
+  // latest tick, so it never works with stale state.
+  const latestTick = useRef(tick);
+  useEffect(() => {
+    latestTick.current = tick;
+  });
+
+  useEffect(() => {
+    if (!isRunning) return;
+
+    const intervalId = setInterval(() => latestTick.current(), 1000);
     return () => clearInterval(intervalId);
-  }, [time, isRunning]);
+  }, [isRunning]);
 
   const timeLeftSeconds = timeInLieuInSeconds - time;
 
   const toggleTimer = () => {
     if (isRunning) {
       performSave();
-      localStorage && localStorage.setItem("isRunning", "false");
+      storage?.setItem("isRunning", "false");
       setIsRunning(false);
       setTime(0);
     } else {
       performSave();
-      localStorage && localStorage.setItem("isRunning", "true");
+      storage?.setItem("isRunning", "true");
       setIsRunning(true);
       setStartTime();
     }
